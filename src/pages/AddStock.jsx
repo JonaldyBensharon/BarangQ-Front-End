@@ -10,7 +10,7 @@ export default function AddStock() {
   const handleAddStock = async (e) => {
     e.preventDefault();
     try {
-        const res = await axios.post('http://127.0.0.1:5001/add-stock', {
+        const res = await axios.post('http://127.0.0.1:5001/api/stocks/add-stock', {
             search_term: input,
             qty: parseInt(qty)
         });
