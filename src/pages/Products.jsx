@@ -17,7 +17,7 @@ export default function Products() {
   useEffect(() => { fetchProducts(); }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get('http://127.0.0.1:5001/products');
+    const res = await axios.get('http://127.0.0.1:5001/api/products');
     setProducts(res.data);
   };
 
@@ -37,10 +37,10 @@ export default function Products() {
     e.preventDefault();
     try {
         if (isEdit) {
-            await axios.put(`http://127.0.0.1:5001/products/${form.id}`, form);
+            await axios.put(`http://127.0.0.1:5001/api/products/${form.id}`, form);
             Swal.fire('Sukses', 'Data barang berhasil diperbarui', 'success');
         } else {
-            await axios.post('http://127.0.0.1:5001/products', form);
+            await axios.post('http://127.0.0.1:5001/api/products', form);
             Swal.fire('Berhasil', 'Barang berhasil ditambahkan', 'success');
         }
         setShowModal(false);
@@ -60,7 +60,7 @@ export default function Products() {
         showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            await axios.delete(`http://127.0.0.1:5001/products/${id}`);
+            await axios.delete(`http://127.0.0.1:5001/api/products/${id}`);
             fetchProducts();
             Swal.fire('Terhapus!', 'Barang telah dihapus.', 'success');
         }

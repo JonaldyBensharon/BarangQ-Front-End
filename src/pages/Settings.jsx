@@ -9,13 +9,13 @@ export default function Settings() {
 
   useEffect(() => {
     // Ambil data user saat ini (Admin)
-    axios.get('http://127.0.0.1:5001/user-info').then(res => setForm(res.data));
+    axios.get('http://127.0.0.1:5001/api/users/info').then(res => setForm(res.data));
   }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-        const res = await axios.put('http://127.0.0.1:5001/settings', form);
+        const res = await axios.put('http://127.0.0.1:5001/api/settings', form);
         // Simpan data baru ke local storage (opsional, untuk sesi)
         localStorage.setItem('user', JSON.stringify(res.data));
         

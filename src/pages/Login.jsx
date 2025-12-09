@@ -11,13 +11,13 @@ export default function Login({ onLogin }) {
     const endpoint = isRegister ? 'register' : 'login';
     
     try {
-        const res = await fetch(`http://127.0.0.1:5001/api/auth/${endpoint}`, {
+        const res = await fetch(`http://127.0.0.1:5001/api/users/${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
         
-        const data = await res.json(); // Sekarang aman karena server pasti kirim JSON
+        const data = await res.json(); 
 
         if (res.ok) {
             if (isRegister) {

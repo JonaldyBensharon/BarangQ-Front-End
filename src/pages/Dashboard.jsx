@@ -7,8 +7,8 @@ export default function Dashboard() {
   const [store, setStore] = useState({});
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5001/dashboard').then(res => setStats(res.data));
-    axios.get('http://127.0.0.1:5001/user-info').then(res => setStore(res.data));
+    axios.get('http://127.0.0.1:5001/api/dashboard').then(res => setStats(res.data));
+    axios.get('http://127.0.0.1:5001/api/users/info').then(res => setStore(res.data));
   }, []);
 
   return (
