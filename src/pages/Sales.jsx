@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { ShoppingCart } from 'lucide-react';
+import { API_URL } from '../components/config';
+
+const API_BASE = API_URL;
 
 export default function Sales() {
   const [products, setProducts] = useState([]);
@@ -12,7 +15,7 @@ export default function Sales() {
   useEffect(() => { fetchProducts(); }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get('http://127.0.0.1:5001/api/products');
+    const res = await axios.get(`${API_BASE}/products`);
     setProducts(res.data);
   };
 
@@ -25,7 +28,7 @@ export default function Sales() {
     const profit = (parseInt(selectedProduct.sell_price) - parseInt(selectedProduct.buy_price)) * parseInt(qty);
 
     try {
-        await axios.post('http://127.0.0.1:5001/api/transactions', {
+        await axios.post(`${API_BASE}/transactions`, {
             product_id: parseInt(selectedProduct.id),
             qty: parseInt(qty),
             total_price: total_price,

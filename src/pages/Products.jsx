@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { API_URL } from '../components/config';
+
+const API_BASE = API_URL;
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -17,7 +20,7 @@ export default function Products() {
   useEffect(() => { fetchProducts(); }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get('http://127.0.0.1:5001/api/products');
+    const res = await axios.get(`${API_BASE}/products`);
     setProducts(res.data);
   };
 
@@ -37,10 +40,10 @@ export default function Products() {
     e.preventDefault();
     try {
         if (isEdit) {
-            await axios.put(`http://127.0.0.1:5001/api/products/${form.id}`, form);
+            await axios.put(`${API_BASE}/products/${form.id}`, form);
             Swal.fire('Sukses', 'Data barang berhasil diperbarui', 'success');
         } else {
-            await axios.post('http://127.0.0.1:5001/api/products', form);
+            await axios.post(`${API_BASE}/products`, form);
             Swal.fire('Berhasil', 'Barang berhasil ditambahkan', 'success');
         }
         setShowModal(false);
@@ -60,7 +63,7 @@ export default function Products() {
         showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            await axios.delete(`http://127.0.0.1:5001/api/products/${id}`);
+            await axios.delete(`${API_BASE}/products/${id}`);
             fetchProducts();
             Swal.fire('Terhapus!', 'Barang telah dihapus.', 'success');
         }

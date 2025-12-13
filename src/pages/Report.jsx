@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../components/config';
+
+const API_BASE = API_URL;
 
 export default function Report() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5001/api/reports').then(res => setData(res.data));
+    axios.get(`${API_BASE}/reports`).then(res => setData(res.data));
   }, []);
 
   return (
