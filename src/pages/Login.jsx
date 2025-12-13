@@ -20,7 +20,7 @@ export default function Login({ onLogin }) {
             body: JSON.stringify(formData)
         });
         
-        const data = await res.json(); // Sekarang aman karena server pasti kirim JSON
+        const data = await res.json(); 
 
         if (res.ok) {
             if (isRegister) {
