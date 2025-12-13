@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 import logo from '../assets/logo.png'; 
+import { API_URL } from '../components/config';
+
+const API_BASE = API_URL;
 
 export default function Login({ onLogin }) {
   const [isRegister, setIsRegister] = useState(false);
