@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { DollarSign, Package, ShoppingBag, MapPin } from 'lucide-react';
+import { API_URL } from '../components/config';
+
+const API_BASE = API_URL;
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ income: 0, products: 0, sales: 0, lowStock: [] });
   const [store, setStore] = useState({});
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5001/dashboard').then(res => setStats(res.data));
-    axios.get('http://127.0.0.1:5001/user-info').then(res => setStore(res.data));
+    axios.get(`${API_BASE}/dashboard`).then(res => setStats(res.data));
+    axios.get(`${API_BASE}/users/info`).then(res => setStore(res.data));
   }, []);
 
   return (

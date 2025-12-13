@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import logo from '../assets/logo.png'; 
 import { API_URL } from '../components/config';
 
-const API_BASE = API_URL;
+const API_BASE_USER = `${API_URL}/users`;
 
 export default function Login({ onLogin }) {
   const [isRegister, setIsRegister] = useState(false);
@@ -14,8 +14,7 @@ export default function Login({ onLogin }) {
     const endpoint = isRegister ? 'register' : 'login';
     
     try {
-        // PENTING: Gunakan Port 5001
-        const res = await fetch(`http://127.0.0.1:5001/${endpoint}`, {
+        const res = await fetch(`${API_BASE_USER}/${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)

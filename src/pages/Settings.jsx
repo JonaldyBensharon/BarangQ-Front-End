@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { API_URL } from '../components/config';
+
+const API_BASE = API_URL;
 
 export default function Settings() {
   const [form, setForm] = useState({
@@ -8,15 +11,13 @@ export default function Settings() {
   });
 
   useEffect(() => {
-    // Ambil data user saat ini (Admin)
-    axios.get('http://127.0.0.1:5001/user-info').then(res => setForm(res.data));
+    axios.get(`${API_BASE}/users/info`).then(res => setForm(res.data));
   }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-        const res = await axios.put('http://127.0.0.1:5001/settings', form);
-        // Simpan data baru ke local storage (opsional, untuk sesi)
+        const res = await axios.put(`${API_BASE}/settings`, form);
         localStorage.setItem('user', JSON.stringify(res.data));
         
         Swal.fire({
