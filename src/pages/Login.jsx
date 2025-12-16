@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../components/Login.css";
+import Popup from "../components/Popup";
 
-export default function Login() {
+export default function Login({onLogin}) {
+    const Navigate = useNavigate();
+    
     const [activePanel, setActivePanel] = useState("login");
 
     const [loginData, setLoginData] = useState({ 
@@ -25,11 +29,7 @@ export default function Login() {
 
     const [errors, setErrors] = useState({});
 
-    const [popup, setPopup] = useState({ 
-        show: false, 
-        text: "", 
-        onClose: null 
-    });
+    const [recoveryUser, setRecoveryUser] = useState(null);
 
     const resetAllForms = () => {
         setLoginData({ username: "", password: "" });
@@ -53,15 +53,44 @@ export default function Login() {
         });
     };
 
-    const showPopup = (text, onClose = null) => {
-        setPopup({ show: true, text, onClose });
+    const [popup, setPopup] = useState({
+        show: false,
+        message: "",
+        onClose: null,
+        withCopy: false,
+        copyText: ""
+    });
+
+    const showPopup = (options) => {
+        setPopup({
+            show: true,
+            message: options.message,
+            onClose: options.onClose || null,
+            withCopy: options.withCopy || false,
+            copyText: options.copyText || ""
+        });
     };
 
     const closePopup = () => {
-        setPopup({ show: false, text: "", onClose: null });
-        if (popup.onClose) popup.onClose();
+        setPopup((prev) => {
+            if (prev.onClose) prev.onClose();
+            return { 
+            show: false,
+            message: "",
+            onClose: null,
+            withCopy: false,
+            copyText: "" 
+        };
+        });
     };
     
+    const getUsers = () => {
+        return JSON.parse(localStorage.getItem("users")) || [];
+    };
+
+    const saveUsers = (users) => {
+        localStorage.setItem("users", JSON.stringify(users));
+    };
 
     const validateLogin = () => {
         const err = {};
@@ -113,39 +142,127 @@ export default function Login() {
     const handleLogin = (e) => {
         e.preventDefault();
         if (!validateLogin()) return;
-        showPopup(`Selamat datang, ${loginData.username}`);
+
+        const users = getUsers();
+        const user = users.find((u) => u.username === loginData.username);
+
+        if(!user){
+            showPopup({message:"Akun tidak ditemukan. Pastikan informasi sudah benar atau lakukan registrasi jika belum memiliki akun."});
+            return;
+        }
+
+        if (user.password !== loginData.password) {
+            showPopup({message:"Kata sandi salah. Silakan coba lagi."});
+            return;
+        }
+
+        showPopup({message:`Selamat datang, ${user.username}`,
+            onClose: () => {
+                localStorage.setItem("currentUser", JSON.stringify(user));
+                onLogin(user);
+                Navigate("/", { replace: true });
+        }});
     };
 
     const handleRegister = (e) => {
         e.preventDefault();
         if (!validateRegister()) return;
-        const pin = "1234";
-        showPopup(
-            `Registrasi berhasil!\n\nPin pemulihan akun: ${pin}\nSilakan melakukan login kembali!`,
-            () => switchPanel("login")
+
+        const users = getUsers();
+        const exists = users.find(
+            (u) => u.username === registerData.username
         );
+
+        if (exists) {
+            showPopup({message:"Username sudah digunakan. Silakan gunakan username lain."});
+            return;
+        }
+
+        const pin = String(Math.floor(1000 + Math.random() * 9000));
+
+        users.push({
+            username: registerData.username,
+            password: registerData.password,
+            nama_toko: registerData.nama_toko,
+            pin
+        });
+
+        saveUsers(users);
+        showPopup({
+            message: (
+                <>
+                <p>Registrasi berhasil!</p>
+                <p>
+                    Pin pemulihan akun: <strong>{pin}</strong>
+                </p>
+                <p>Silakan masuk dengan akun yang baru Anda buat!</p>
+                </>
+            ),
+            withCopy: true,
+            copyText: pin,
+            onClose: () => switchPanel("login")
+        });
     };
 
     const handleRecovery = (e) => {
         e.preventDefault();
         if (!validateRecovery()) return;
-        showPopup("Verifikasi berhasil. Silakan buat kata sandi baru", () =>
-            switchPanel("reset")
-        );
+
+        const users = getUsers();
+        const user = users.find((u) => u.username === recoveryData.username);
+
+        if(!user){
+            showPopup({message:"Username tidak ditemukan. Pastikan informasi sudah benar atau lakukan registrasi jika belum memiliki akun."});
+            return;
+        }
+
+        if(user.pin !== recoveryData.pin){
+            showPopup({message:"Pin tidak sesuai."});
+            return;
+        }
+
+        setRecoveryUser(user);
+
+        showPopup({
+            message: "Verifikasi berhasil. Silakan buat kata sandi baru",
+            onClose: () => switchPanel("reset")
+        });
     };
 
     const handleReset = (e) => {
         e.preventDefault();
         if (!validateReset()) return;
-        showPopup("Kata sandi telah diperbarui. Silakan login kembali", () =>
-            switchPanel("login")
+
+        if (!recoveryUser) {
+            showPopup({
+                message: "Sesi pemulihan tidak valid. Silakan ulangi proses pemulihan."
+            });
+            switchPanel("recovery");
+            return;
+        }
+
+        const users = getUsers();
+        const updatedUsers = users.map((u) =>
+            u.username === recoveryUser.username
+            ? { ...u, password: resetData.password }
+            : u
         );
+
+        saveUsers(updatedUsers);
+        setRecoveryUser(null);
+
+        showPopup({
+            message: "Kata sandi telah diperbarui. Silakan login kembali",
+            onClose: () =>switchPanel("login")
+        });
     };
 
     const panelClass = (name) =>
         name === activePanel ? "tampil" : "tersembunyi";
 
     return (
+    <div className="login-page">
+        <div className="login-container">
         <div className="main-container">
             <div className="form-section">
                 <main id="pembungkusHalaman">
@@ -399,17 +516,15 @@ export default function Login() {
                     </section>
                 </main>
             </div>
-
-            {popup.show && (
-                <div id="popupOverlay" className="popup-overlay">
-                    <div className="popup-box">
-                        <p id="popupText">{popup.text}</p>
-                        <button id="popupBtn" className="popup-btn" onClick={closePopup}>
-                            OK
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
+        <Popup 
+            open={popup.show} 
+            message={popup.message} 
+            withCopy={popup.withCopy}
+            copyText={popup.copyText}
+            onConfirm={closePopup} 
+        />
+        </div>
+    </div>
     );
 }

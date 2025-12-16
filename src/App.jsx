@@ -44,6 +44,13 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+  const savedUser = localStorage.getItem("currentUser");
+  if (savedUser) {
+    setUser(JSON.parse(savedUser));
+  }
+  }, []);
+
+  useEffect(() => {
     setTimeout(() => setLoading(false), 3000);
   }, []);
 
@@ -68,7 +75,10 @@ function App() {
         
         <Route path="/*" element={
           user ? (
-            <Layout onLogout={() => setUser(null)}>
+            <Layout onLogout={() => {
+              localStorage.removeItem("currentUser");
+              setUser(null);
+            }}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/products" element={<Products />} />
