@@ -12,6 +12,7 @@ import Report from './pages/Report';
 import Settings from './pages/Settings';
 import Sidebar from './components/Sidebar';
 import logo from './assets/logo.png';
+import api from './components/api';
 
 const Layout = ({ children, onLogout }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -44,15 +45,23 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-  const savedUser = localStorage.getItem("currentUser");
-  if (savedUser) {
-    setUser(JSON.parse(savedUser));
-  }
-  }, []);
+    const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 3000);
-  }, []);
+    if (token) {
+      api.get('/users/info', { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => {
+          setUser(res.data);
+          localStorage.setItem('currentUser', JSON.stringify(res.data)); 
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('currentUser');
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+    }, []);
 
   if (loading) {
     return (
@@ -76,6 +85,7 @@ function App() {
         <Route path="/*" element={
           user ? (
             <Layout onLogout={() => {
+              localStorage.removeItem("token");
               localStorage.removeItem("currentUser");
               setUser(null);
             }}>
