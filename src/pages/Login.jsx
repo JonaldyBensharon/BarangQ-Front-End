@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/Login.css";
 import Popup from "../components/Popup";
+import api from "../components/api";
 
 export default function Login({onLogin}) {
     const Navigate = useNavigate();
@@ -26,6 +27,9 @@ export default function Login({onLogin}) {
 
     const [resetData, setResetData] = useState({ 
         password: "" });
+    
+    const [confirmPassword, setConfirmPassword] = useState({
+        confirmPass: ""});
 
     const [errors, setErrors] = useState({});
 
@@ -83,14 +87,6 @@ export default function Login({onLogin}) {
         };
         });
     };
-    
-    const getUsers = () => {
-        return JSON.parse(localStorage.getItem("users")) || [];
-    };
-
-    const saveUsers = (users) => {
-        localStorage.setItem("users", JSON.stringify(users));
-    };
 
     const validateLogin = () => {
         const err = {};
@@ -120,7 +116,7 @@ export default function Login({onLogin}) {
 
     const validateRecovery = () => {
         const err = {};
-        if (!recoveryData.username) err["lupa-username"] = "Nama pengguna wajib diisi";
+        if (!recoveryData.username.trim()) err["lupa-username"] = "Nama pengguna wajib diisi";
 
         if (!recoveryData.pin) err["lupa-pin"] = "PIN pemulihan wajib diisi";
         else if (recoveryData.pin.length < 4)
@@ -135,101 +131,104 @@ export default function Login({onLogin}) {
         if (!resetData.password) err["reset-password"] = "Kata sandi wajib diisi";
         else if (resetData.password.length < 5)
             err["reset-password"] = "Kata sandi minimal terdiri dari 5 karakter";
+
+        if (!confirmPassword.confirmPass) {
+            err["reset-confirm"] = "Konfirmasi kata sandi wajib diisi.";
+        } else if (resetData.password !== confirmPassword.confirmPass) {
+            err["reset-confirm"] = "Konfirmasi kata sandi tidak cocok.";
+        }
+
         setErrors(err);
         return Object.keys(err).length === 0;
     };
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         if (!validateLogin()) return;
 
-        const users = getUsers();
-        const user = users.find((u) => u.username === loginData.username);
+        try {
+            const response = await api.post('/users/login', {
+                username: loginData.username,
+                password: loginData.password
+            });
 
-        if(!user){
-            showPopup({message:"Akun tidak ditemukan. Pastikan informasi sudah benar atau lakukan registrasi jika belum memiliki akun."});
-            return;
+            const { user, message, token } = response.data;
+
+            localStorage.setItem('token', token);
+            localStorage.setItem('currentUser', JSON.stringify(user));
+
+            showPopup({message:`Selamat datang, ${user.username}`,
+                onClose: () => {
+                    onLogin(user);
+                    Navigate("/", { replace: true });
+            }});
+        }catch (err) {
+            const errorMessage = err.response?.data?.error || 'Terjadi kesalahan server';
+            showPopup({ message: errorMessage });
         }
-
-        if (user.password !== loginData.password) {
-            showPopup({message:"Kata sandi salah. Silakan coba lagi."});
-            return;
-        }
-
-        showPopup({message:`Selamat datang, ${user.username}`,
-            onClose: () => {
-                localStorage.setItem("currentUser", JSON.stringify(user));
-                onLogin(user);
-                Navigate("/", { replace: true });
-        }});
     };
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         if (!validateRegister()) return;
 
-        const users = getUsers();
-        const exists = users.find(
-            (u) => u.username === registerData.username
-        );
+        try {
+            console.log("Register data:", registerData);
 
-        if (exists) {
-            showPopup({message:"Username sudah digunakan. Silakan gunakan username lain."});
-            return;
+            const response = await api.post('/users/register', {
+                username: registerData.username,
+                password: registerData.password,
+                store_name: registerData.nama_toko
+            });
+
+            const { user, message } = response.data;
+            const pin = user.pin;
+            
+            showPopup({
+                message: (
+                    <>
+                    <p>Registrasi berhasil!</p>
+                    <p>
+                        Pin pemulihan akun: <strong>{pin}</strong>
+                    </p>
+                    <p>Silakan masuk dengan akun yang baru Anda buat!</p>
+                    </>
+                ),
+                withCopy: true,
+                copyText: pin,
+                onClose: () => switchPanel("login")
+            });
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Terjadi kesalahan server';
+            showPopup({ message: errorMessage });
         }
-
-        const pin = String(Math.floor(1000 + Math.random() * 9000));
-
-        users.push({
-            username: registerData.username,
-            password: registerData.password,
-            nama_toko: registerData.nama_toko,
-            pin
-        });
-
-        saveUsers(users);
-        showPopup({
-            message: (
-                <>
-                <p>Registrasi berhasil!</p>
-                <p>
-                    Pin pemulihan akun: <strong>{pin}</strong>
-                </p>
-                <p>Silakan masuk dengan akun yang baru Anda buat!</p>
-                </>
-            ),
-            withCopy: true,
-            copyText: pin,
-            onClose: () => switchPanel("login")
-        });
     };
 
-    const handleRecovery = (e) => {
+    const handleRecovery = async (e) => {
         e.preventDefault();
         if (!validateRecovery()) return;
 
-        const users = getUsers();
-        const user = users.find((u) => u.username === recoveryData.username);
+        try {
+            const response = await api.put('/users/verify-pin', {
+                username: recoveryData.username,
+                pin: recoveryData.pin
+            });
 
-        if(!user){
-            showPopup({message:"Username tidak ditemukan. Pastikan informasi sudah benar atau lakukan registrasi jika belum memiliki akun."});
-            return;
+            const { message, username } = response.data;
+
+            setRecoveryUser({ username });
+
+            showPopup({
+                message: "Verifikasi berhasil. Silakan buat kata sandi baru",
+                onClose: () => switchPanel("reset")
+            });
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Terjadi kesalahan server';
+            showPopup({ message: errorMessage });
         }
-
-        if(user.pin !== recoveryData.pin){
-            showPopup({message:"Pin tidak sesuai."});
-            return;
-        }
-
-        setRecoveryUser(user);
-
-        showPopup({
-            message: "Verifikasi berhasil. Silakan buat kata sandi baru",
-            onClose: () => switchPanel("reset")
-        });
     };
 
-    const handleReset = (e) => {
+    const handleReset = async (e) => {
         e.preventDefault();
         if (!validateReset()) return;
 
@@ -241,20 +240,24 @@ export default function Login({onLogin}) {
             return;
         }
 
-        const users = getUsers();
-        const updatedUsers = users.map((u) =>
-            u.username === recoveryUser.username
-            ? { ...u, password: resetData.password }
-            : u
-        );
+         try {
+            const response = await api.put('/users/reset-password', {
+                username: recoveryUser.username,
+                newPassword: resetData.password
+            });
 
-        saveUsers(updatedUsers);
-        setRecoveryUser(null);
+            const { message } = response.data;
 
-        showPopup({
-            message: "Kata sandi telah diperbarui. Silakan login kembali",
-            onClose: () =>switchPanel("login")
-        });
+            setRecoveryUser(null);
+
+            showPopup({
+                message: "Kata sandi telah diperbarui. Silakan login kembali",
+                onClose: () => switchPanel("login")
+            });
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Terjadi kesalahan server';
+            showPopup({ message: errorMessage });
+        }
     };
 
     const panelClass = (name) =>
@@ -496,6 +499,24 @@ export default function Login({onLogin}) {
                                 />
                                 <p className={`error-text ${errors["reset-password"] ? "show" : "hidden"}`}>
                                     {errors["reset-password"]}
+                                </p>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="reset-confirm">Konfirmasi Kata Sandi</label>
+                                <input
+                                    id="reset-confirm"
+                                    type="password"
+                                    placeholder="Konfirmasi kata sandi baru"
+                                    className={errors["reset-confirm"] ? "error" : ""}
+                                    value={confirmPassword.confirmPass}
+                                    onChange={(e) => {
+                                        setConfirmPassword({confirmPass: e.target.value});
+                                        clearFieldError("reset-confirm");
+                                    }}
+                                />
+                                <p className={`error-text ${errors["reset-confirm"] ? "show" : "hidden"}`}>
+                                    {errors["reset-confirm"]}
                                 </p>
                             </div>
 
