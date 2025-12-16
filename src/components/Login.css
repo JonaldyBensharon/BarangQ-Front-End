@@ -14,14 +14,14 @@
     --transition: all 0.25s ease;
 }
 
-* {
+.login-page * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", "Segoe UI", Arial, sans-serif;
 }
 
-body {
+.login-page {
     background: linear-gradient(135deg, #2b2ff1 0%, #8f82ff 100%);
     min-height: 100vh;
     display: flex;
@@ -29,6 +29,7 @@ body {
     justify-content: center;
     padding: 20px;
 }
+
 
 /* Main container */
 .main-container {
