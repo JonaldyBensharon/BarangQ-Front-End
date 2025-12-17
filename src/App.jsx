@@ -48,12 +48,15 @@ function App() {
     const token = localStorage.getItem('token');
 
     if (token) {
-      api.get('/users/info', { headers: { Authorization: `Bearer ${token}` } })
+      // PERBAIKAN DI SINI:
+      // Tambahkan '/api' di depan URL agar sesuai dengan route backend
+      api.get('/api/users/info', { headers: { Authorization: `Bearer ${token}` } })
         .then(res => {
           setUser(res.data);
           localStorage.setItem('currentUser', JSON.stringify(res.data)); 
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Gagal verifikasi token:", err);
           localStorage.removeItem('token');
           localStorage.removeItem('currentUser');
         })
