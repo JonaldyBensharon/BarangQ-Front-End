@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { DollarSign, Package, ShoppingBag, MapPin } from 'lucide-react';
-import { API_URL } from '../components/config';
-
-const API_BASE = API_URL;
+import api from '../components/api'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ income: 0, products: 0, sales: 0, lowStock: [] });
   const [store, setStore] = useState({});
 
   useEffect(() => {
-    axios.get(`${API_BASE}/dashboard`).then(res => setStats(res.data));
-    axios.get(`${API_BASE}/users/info`).then(res => setStore(res.data));
+    api.get('/dashboard').then(res => setStats(res.data));
+    api.get('/users/info').then(res => setStore(res.data));
   }, []);
 
   return (

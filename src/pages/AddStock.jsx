@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Archive, Search } from 'lucide-react';
-import { API_URL } from '../components/config';
-
-const API_BASE = API_URL;
+import api from '../components/api'
 
 export default function AddStock() {
   const [input, setInput] = useState('');
@@ -13,9 +10,9 @@ export default function AddStock() {
   const handleAddStock = async (e) => {
     e.preventDefault();
     try {
-        const res = await axios.post(`${API_BASE}/stocks/add-stock`, {
+        const res = await api.post('/stocks/add-stock', {
             search_term: input,
-            qty: parseInt(qty)
+            qty: Number(qty)
         });
         
         Swal.fire({

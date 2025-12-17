@@ -26,7 +26,7 @@ const Layout = ({ children, onLogout }) => {
           <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-blue-700 rounded">
             <Menu size={24} />
           </button>
-          <h1 className="font-bold text-lg hidden md:block">Sistem Manajemen BARANGQ</h1>
+          <h1 className="font-bold text-lg hidden md:block">BarangQ</h1>
           <button onClick={onLogout} className="flex items-center bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded text-sm font-medium transition">
             <LogOut size={16} className="mr-2" /> Keluar
           </button>
