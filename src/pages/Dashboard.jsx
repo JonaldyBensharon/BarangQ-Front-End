@@ -5,6 +5,9 @@ import api from '../components/api';
 export default function Dashboard() {
   const [stats, setStats] = useState({ income: 0, products: 0, sales: 0, lowStock: [] });
   const [store, setStore] = useState({});
+  
+  // URL Backend untuk akses gambar
+  const API_URL = 'http://localhost:5001';
 
   useEffect(() => {
     fetchData();
@@ -28,7 +31,11 @@ export default function Dashboard() {
       {/* Profil Toko */}
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 text-white mb-8 shadow-xl flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
         <img 
-            src={store.store_image || "https://via.placeholder.com/150?text=Toko"} 
+            src={
+                store.store_image 
+                    ? (store.store_image.startsWith('/uploads') ? `${API_URL}${store.store_image}` : store.store_image)
+                    : "https://ui-avatars.com/api/?name=Toko&background=random"
+            } 
             alt="Logo Toko"
             className="w-24 h-24 rounded-full border-4 border-gray-600 mb-4 md:mb-0 md:mr-6 object-cover bg-white"
             onError={(e) => {e.target.src = "https://ui-avatars.com/api/?name=Error&background=red"}}

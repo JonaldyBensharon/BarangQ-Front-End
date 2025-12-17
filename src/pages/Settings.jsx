@@ -8,6 +8,8 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile'); 
   
+  const API_URL = 'http://localhost:5001';
+
   const [selectedFile, setSelectedFile] = useState(null); 
   const [isImageDeleted, setIsImageDeleted] = useState(false);
 
@@ -30,7 +32,6 @@ export default function Settings() {
 
   const fileInputRef = useRef(null);
 
-  // --- PERBAIKAN LOGIKA FETCH DATA ---
   useEffect(() => {
     fetchData();
   }, []);
@@ -62,6 +63,7 @@ export default function Settings() {
     if (file) {
       setSelectedFile(file);
       setIsImageDeleted(false); 
+      // Preview lokal (blob)
       const previewUrl = URL.createObjectURL(file);
       setForm({ ...form, store_image: previewUrl });
     }
@@ -102,6 +104,8 @@ export default function Settings() {
         setSelectedFile(null);
         setIsImageDeleted(false);
         
+        fetchData();
+
         Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Profil toko diperbarui', timer: 1500, showConfirmButton: false });
     } catch(err) { 
         console.error(err);
@@ -205,10 +209,14 @@ export default function Settings() {
                 <div className="w-full lg:w-1/3">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center sticky top-4">
                         <img 
-                            src={form.store_image || "https://via.placeholder.com/150?text=No+Image"} 
+                            src={
+                                form.store_image 
+                                    ? (form.store_image.startsWith('/uploads') ? `${API_URL}${form.store_image}` : form.store_image)
+                                    : "https://via.placeholder.com/150?text=No+Image"
+                            } 
                             alt="Logo Toko" 
                             className="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-blue-50"
-                            onError={(e) => {e.target.src = "https://via.placeholder.com/150?text=Error"}}
+                            onError={(e) => {e.target.src = "https://ui-avatars.com/api/?name=Error&background=red"}}
                         />
                         <h3 className="font-bold text-xl">{form.store_name || "Nama Toko"}</h3>
                         <p className="text-gray-500 text-sm">@{form.username}</p>

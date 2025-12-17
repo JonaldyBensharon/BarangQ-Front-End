@@ -48,8 +48,6 @@ function App() {
     const token = localStorage.getItem('token');
 
     if (token) {
-      // PERBAIKAN DI SINI:
-      // Tambahkan '/api' di depan URL agar sesuai dengan route backend
       api.get('/api/users/info', { headers: { Authorization: `Bearer ${token}` } })
         .then(res => {
           setUser(res.data);
