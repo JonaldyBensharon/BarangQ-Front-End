@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Swal from 'sweetalert2';
-import { API_URL } from '../components/config';
-
-const API_BASE = API_URL;
+import api from '../components/api';
 
 export default function Settings() {
   const [form, setForm] = useState({
@@ -11,13 +8,13 @@ export default function Settings() {
   });
 
   useEffect(() => {
-    axios.get(`${API_BASE}/users/info`).then(res => setForm(res.data));
+    api.get('/users/info').then(res => setForm(res.data));
   }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-        const res = await axios.put(`${API_BASE}/settings`, form);
+        const res = await api.put('/settings', form);
         localStorage.setItem('user', JSON.stringify(res.data));
         
         Swal.fire({
