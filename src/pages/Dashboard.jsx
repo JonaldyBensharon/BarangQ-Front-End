@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import { useEffect, useState } from 'react';
 import { DollarSign, Package, ShoppingBag, MapPin } from 'lucide-react';
 import api from '../components/api';
@@ -14,10 +15,10 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
-        const resStats = await api.get('/api/dashboard');
+        const resStats = await api.get('/dashboard');
         setStats(resStats.data);
 
-        const resStore = await api.get('/api/settings');
+        const resStore = await api.get('/settings');
         setStore(resStore.data);
         
     } catch (err) {

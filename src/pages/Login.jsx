@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/Login.css";
@@ -147,12 +148,12 @@ export default function Login({onLogin}) {
         if (!validateLogin()) return;
 
         try {
-            const response = await api.post('/api/users/login', {
+            const response = await api.post('/users/login', {
                 username: loginData.username,
                 password: loginData.password
             });
 
-            const { user, token } = response.data;
+            const { user, message, token } = response.data;
 
             localStorage.setItem('token', token);
             localStorage.setItem('currentUser', JSON.stringify(user));
@@ -173,13 +174,15 @@ export default function Login({onLogin}) {
         if (!validateRegister()) return;
 
         try {
-            const response = await api.post('/api/users/register', {
+            console.log("Register data:", registerData);
+
+            const response = await api.post('/users/register', {
                 username: registerData.username,
                 password: registerData.password,
                 store_name: registerData.nama_toko
             });
 
-            const { user } = response.data;
+            const { user, message } = response.data;
             const pin = user.pin;
             
             showPopup({
@@ -207,13 +210,12 @@ export default function Login({onLogin}) {
         if (!validateRecovery()) return;
 
         try {
-            // ✅ PERBAIKAN: Tambah /api
-            const response = await api.put('/api/users/verify-pin', {
+            const response = await api.put('/users/verify-pin', {
                 username: recoveryData.username,
                 pin: recoveryData.pin
             });
 
-            const { username } = response.data;
+            const { message, username } = response.data;
 
             setRecoveryUser({ username });
 
@@ -240,10 +242,12 @@ export default function Login({onLogin}) {
         }
 
          try {
-        await api.put('/api/users/reset-password', {
+            const response = await api.put('/users/reset-password', {
                 username: recoveryUser.username,
                 newPassword: resetData.password
             });
+
+            const { message } = response.data;
 
             setRecoveryUser(null);
 
@@ -256,8 +260,6 @@ export default function Login({onLogin}) {
             showPopup({ message: errorMessage });
         }
     };
-
-    // --- BATAS PERBAIKAN ---
 
     const panelClass = (name) =>
         name === activePanel ? "tampil" : "tersembunyi";

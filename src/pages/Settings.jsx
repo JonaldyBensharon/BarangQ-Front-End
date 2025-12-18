@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
+ 
 import { useState, useEffect, useRef } from 'react'; 
 import { useNavigate } from 'react-router-dom';     
 import Swal from 'sweetalert2';
@@ -38,7 +41,7 @@ export default function Settings() {
 
   const fetchData = async () => {
     try {
-      const res = await api.get('/api/settings'); 
+      const res = await api.get('/settings'); 
       
       setForm(prev => ({
           ...prev,
@@ -92,7 +95,7 @@ export default function Settings() {
             formData.append('store_image', form.store_image || '');
         }
 
-        const res = await api.put('/api/settings', formData, {
+        const res = await api.put('/settings', formData, {
             headers: { "Content-Type": "multipart/form-data" },
         });
 
@@ -119,7 +122,7 @@ export default function Settings() {
     }
     
     try {
-      await api.put('/api/users/change-password', {
+      await api.put('/settings/change-password', {
         oldPassword: passForm.oldPassword,
         newPassword: passForm.newPassword
       });
@@ -132,8 +135,8 @@ export default function Settings() {
 
   const handleResetViaPin = async () => {
     try {
-      await api.put('/api/users/verify-pin', { username: form.username, pin: pinData.pin });
-      await api.put('/api/users/reset-password', { username: form.username, newPassword: pinData.newPass });
+      await api.put('/settings/verify-pin', { username: form.username, pin: pinData.pin });
+      await api.put('/settings/reset-password', { username: form.username, newPassword: pinData.newPass });
       
       setShowPinModal(false);
       setPinData({ pin: '', newPass: '' });
@@ -156,7 +159,7 @@ export default function Settings() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete('/api/users/delete-account');
+        await api.delete('/settings/delete-account');
 
         await Swal.fire({
             title: 'Terhapus!',
