@@ -1,4 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/immutability */
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -22,11 +23,10 @@ export default function Products() {
 
   const fetchProducts = async () => {
     try {
-        // PERBAIKAN: Pakai /api/products
-        const res = await api.get('/api/products');
+        const res = await api.get('/products');
         setProducts(res.data);
     } catch (err) {
-        console.error("Gagal ambil produk", err);
+        console.error("Gagal mengambil data produk", err);
     }
   };
 
@@ -46,11 +46,11 @@ export default function Products() {
     e.preventDefault();
     try {
         if (isEdit) {
-            await api.put(`/api/products/${form.id}`, form);
+            await api.put(`/products/${form.id}`, form);
             Swal.fire('Sukses', 'Data barang berhasil diperbarui', 'success');
         } else {
-            await api.post(`/api/products`, form);
-            Swal.fire('Berhasil', 'Barang berhasil ditambahkan', 'success');
+            await api.post(`products`, form);
+            Swal.fire('Berhasil', 'Barang berhasil didaftarkan', 'success');
         }
         setShowModal(false);
         fetchProducts();
@@ -65,13 +65,12 @@ export default function Products() {
 
   const handleDelete = async (id) => {
     Swal.fire({
-        title: 'Yakin hapus?', text: "Data tidak bisa dikembalikan!", icon: 'warning',
+        title: 'Konfirmasi Penghapusan', text: "Data yang telah dihapus tidak bisa dikembalikan!", icon: 'warning',
         showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                // PERBAIKAN: Pakai /api/products
-                await api.delete(`/api/products/${id}`);
+                await api.delete(`/products/${id}`);
                 fetchProducts();
                 Swal.fire('Terhapus!', 'Barang telah dihapus.', 'success');
             } catch (err) {
@@ -87,26 +86,22 @@ export default function Products() {
     <div className="animate-fade-in">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Daftar Barang</h2>
 
-      {/* Kontrol Atas */}
       <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex justify-between items-center border">
-        
-        {/* --- PENCARIAN (Gaya Baru: Clean, No Border, Flexbox) --- */}
-        <div className="w-1/3 flex items-center px-3 py-2 bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm focus-within:ring-2 focus-within:ring-blue-100">
+        <div className="w-2/3 flex items-center px-3 py-2 bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm focus-within:ring-2 focus-within:ring-blue-100">
             <Search className="text-gray-400 mr-2 shrink-0" size={20} />
             <input 
                 type="text" 
-                placeholder="Cari Nama Barang..." 
+                placeholder="Cari Nama Barang" 
                 className="w-full outline-none bg-transparent border-none p-0 text-gray-700 placeholder-gray-400"
                 onChange={(e) => setSearch(e.target.value)}
             />
         </div>
 
         <button onClick={openAddModal} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex items-center hover:bg-blue-700 transition">
-            <Plus size={20} className="mr-2"/> Tambah Barang Baru
+            <Plus size={20} className="mr-2"/> Daftarkan Barang Baru
         </button>
       </div>
 
-      {/* Tabel */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
         <table className="w-full text-left">
             <thead className="bg-gray-50 border-b">
@@ -114,23 +109,23 @@ export default function Products() {
                     <th className="p-4">Foto</th>
                     <th className="p-4">Kode/Nama</th>
                     <th className="p-4">Merk</th>
+                    <th className='p-4'>Harga Beli</th>
                     <th className="p-4">Harga Jual</th>
                     <th className="p-4">Stok</th>
-                    <th className="p-4 text-center">Aksi</th>
+                    <th className="p-4 text-center">Edit</th>
                 </tr>
             </thead>
             <tbody className="divide-y">
                 {filtered.map((item) => (
                     <tr key={item.id} className="hover:bg-blue-50">
                         <td className="p-4">
-                            {/* PERBAIKAN: Logika Gambar Aman & Support Upload */}
                             <img 
                                 src={
                                     item.image_url 
                                         ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`)
                                         : "https://placehold.co/50" 
                                 } 
-                                alt="" 
+                                alt="Gambar Barang" 
                                 className="w-12 h-12 object-cover rounded bg-gray-200 border"
                                 onError={(e) => {e.target.src = "https://placehold.co/50?text=No+Img"}}
                             />
@@ -140,6 +135,7 @@ export default function Products() {
                             <div className="text-xs text-gray-500">{item.code || '-'}</div>
                         </td>
                         <td className="p-4 text-gray-600">{item.brand || '-'}</td>
+                        <td className="p-4 font-medium">Rp {parseInt(item.buy_price).toLocaleString()}</td>
                         <td className="p-4 font-medium">Rp {parseInt(item.sell_price).toLocaleString()}</td>
                         <td className={`p-4 font-bold ${item.stock < 5 ? 'text-red-600' : 'text-green-600'}`}>{item.stock}</td>
                         <td className="p-4 flex justify-center space-x-2">
@@ -155,7 +151,6 @@ export default function Products() {
         )}
       </div>
 
-      {/* MODAL TAMBAH/EDIT */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in backdrop-blur-sm">
             <div className="bg-white p-6 rounded-2xl w-[600px] shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -165,53 +160,52 @@ export default function Products() {
                 </div>
                 <form onSubmit={handleSave} className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-500">KODE BARANG</label>
+                        <label className="text-xs font-bold text-gray-500">Kode Barang</label>
                         <input type="text" placeholder="Contoh: BRG-001" className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
                             value={form.code} onChange={e => setForm({...form, code: e.target.value})} />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-500">MERK / BRAND</label>
-                        <input type="text" placeholder="Contoh: Indofood" className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                        <label className="text-xs font-bold text-gray-500">Merk/Brand</label>
+                        <input type="text" placeholder="Contoh: Cahaya" className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
                             value={form.brand} onChange={e => setForm({...form, brand: e.target.value})} />
                     </div>
                     
                     <div className="col-span-2 space-y-1">
-                        <label className="text-xs font-bold text-gray-500">NAMA BARANG</label>
-                        <input type="text" required placeholder="Nama Produk..." className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                        <label className="text-xs font-bold text-gray-500">Nama Barang</label>
+                        <input type="text" required placeholder="Contoh: Buku" className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
                             value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
                     </div>
 
                     <div className="col-span-2 space-y-1">
-                        <label className="text-xs font-bold text-gray-500">DESKRIPSI</label>
-                        <textarea placeholder="Keterangan singkat..." className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" rows="2"
+                        <label className="text-xs font-bold text-gray-500">Deskripsi</label>
+                        <textarea placeholder="Keterangan singkat" className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" rows="2"
                             value={form.description} onChange={e => setForm({...form, description: e.target.value})}></textarea>
                     </div>
                     
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-500">HARGA BELI (MODAL)</label>
+                        <label className="text-xs font-bold text-gray-500">Harga Beli</label>
                         <input type="number" required className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
                             value={form.buy_price} onChange={e => setForm({...form, buy_price: e.target.value})} />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-500">HARGA JUAL</label>
+                        <label className="text-xs font-bold text-gray-500">Harga Jual</label>
                         <input type="number" required className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
                             value={form.sell_price} onChange={e => setForm({...form, sell_price: e.target.value})} />
                     </div>
                     
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-500">STOK AWAL</label>
-                        {/* Stok didisable saat Edit agar tidak rancu dengan fitur Tambah Stok */}
+                        <label className="text-xs font-bold text-gray-500">Stok Awal</label>
                         <input type="number" required className="border p-2 rounded w-full bg-gray-50" disabled={isEdit}
                             value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-500">URL GAMBAR</label>
+                        <label className="text-xs font-bold text-gray-500">URL Gambar</label>
                         <input type="text" placeholder="https://..." className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
                             value={form.image_url} onChange={e => setForm({...form, image_url: e.target.value})} />
                     </div>
 
                     <button className="col-span-2 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 mt-4 transition shadow-lg">
-                        {isEdit ? 'SIMPAN PERUBAHAN' : 'TAMBAH BARANG'}
+                        {isEdit ? 'Simpan Perubahan' : 'Daftarkan Barang'}
                     </button>
                 </form>
             </div>

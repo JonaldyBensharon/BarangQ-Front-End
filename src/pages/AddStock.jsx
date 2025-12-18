@@ -10,7 +10,7 @@ export default function AddStock() {
   const handleAddStock = async (e) => {
     e.preventDefault();
     try {
-        const res = await api.post('/api/stocks/add-stock', {
+        const res = await api.post('/stocks/add-stock', {
             search_term: input,
             qty: Number(qty)
         });
@@ -46,7 +46,7 @@ export default function AddStock() {
         <div className="flex items-center border rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500 bg-white overflow-hidden">
             <Search className="text-gray-400 mr-3 shrink-0" size={20} />
             <input 
-                type="text" required placeholder="Nama atau Kode Barang..." 
+                type="text" required placeholder="Masukkan Nama atau Kode Barang" 
                 className="w-full outline-none bg-transparent text-gray-700 placeholder-gray-400 border-none p-0"
                 value={input} 
                 onChange={e => setInput(e.target.value)} 
@@ -62,7 +62,7 @@ export default function AddStock() {
                 </div>
 
                 <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
-                    PROSES TAMBAH STOK
+                    Proses Penambahan Stok
                 </button>
             </form>
         </div>

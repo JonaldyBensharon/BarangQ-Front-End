@@ -1,4 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/immutability */
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Search, ShoppingCart, Check, ChevronUp, ChevronDown, X } from 'lucide-react';
@@ -8,22 +9,17 @@ export default function Sales() {
     const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
-    
-    // State Keranjang Belanja
     const [pendingSales, setPendingSales] = useState([]);
     const [panelOpen, setPanelOpen] = useState(false);
     const [summarySales, setSummarySales] = useState(null);
     const [highlightedId, setHighlightedId] = useState(null);
-    
-    // State untuk input jumlah sementara sebelum dikonfirmasi
     const [tempQtys, setTempQtys] = useState({});
 
     useEffect(() => { fetchProducts(); }, []);
 
     const fetchProducts = async () => {
         try {
-            // FIX: Gunakan /api/products
-            const res = await api.get('/api/products');
+            const res = await api.get('/products');
             setProducts(res.data);
             setFilteredProducts(res.data);
         } catch (err) {
@@ -31,7 +27,6 @@ export default function Sales() {
         }
     };
 
-    // Filter Pencarian
     useEffect(() => {
         const term = searchTerm.trim().toLowerCase();
         setFilteredProducts(
@@ -42,7 +37,6 @@ export default function Sales() {
         );
     }, [searchTerm, products]);
 
-    // Logika Tambah ke Keranjang
     const addToPending = (product, qty) => {
         if (qty <= 0 || qty > product.stock) {
             Swal.fire('Error', 'Jumlah tidak valid atau melebihi stok', 'error');
@@ -74,19 +68,17 @@ export default function Sales() {
         }
     };
 
-    // Update jumlah di dalam keranjang (Drawer)
     const updateQtyInCart = (id, newQty) => {
         if (newQty < 0) return;
         
-        // Cari stok asli produk untuk validasi max
         const originalProduct = products.find(p => p.id === id);
         const maxStock = originalProduct ? originalProduct.stock : 0;
 
-        if (newQty > maxStock) return; // Cegah melebihi stok
+        if (newQty > maxStock) return; 
 
         setPendingSales(prev => prev.map(item => {
             if (item.id === id) {
-                if (newQty === 0) return null; // Hapus jika 0
+                if (newQty === 0) return null; 
                 return { ...item, qty: newQty, subtotal: item.sell_price * newQty };
             }
             return item;
@@ -96,20 +88,21 @@ export default function Sales() {
     const handleConfirmQty = (product, qty) => {
         addToPending(product, qty);
 
-        // Kurangi stok visual di tabel (agar user tau sisa stok)
         setProducts(products.map(p =>
             p.id === product.id ? { ...p, stock: p.stock - qty } : p
         ));
 
-        // Reset input sementara
+        setFilteredProducts(filteredProducts.map(p =>
+            p.id === product.id ? { ...p, stock: p.stock - qty } : p
+        ));
+
         setTempQtys({ ...tempQtys, [product.id]: 0 });
         setHighlightedId(null);
-        setPanelOpen(true); // Buka drawer otomatis saat nambah barang
     };
 
     const handleRecord = async () => {
         if (pendingSales.length === 0) {
-            Swal.fire('Info', 'Keranjang masih kosong', 'info');
+            Swal.fire('Info', 'Belum ada barang untuk dicatat', 'info');
             return;
         }
 
@@ -119,43 +112,41 @@ export default function Sales() {
                 qty: i.qty
             }));
 
-            // FIX: Gunakan /api/transactions
-            const res = await api.post('/api/transactions', { items: payload });
-            
-            // Ambil detail untuk summary
-            const summary = await api.get(`/api/transactions/${res.data.transaction_id}`);
+            const res = await api.post('/transactions', { items: payload });
+            const summary = await api.get(`/transactions/${res.data.transaction_id}`);
 
             setSummarySales(summary.data);
             setPendingSales([]);
             setPanelOpen(false);
 
-            Swal.fire('Sukses', 'Transaksi Berhasil Disimpan!', 'success');
-            fetchProducts(); // Refresh data terbaru dari server
+            fetchProducts(); 
         } catch (err) {
             Swal.fire('Gagal', err.response?.data?.error || 'Terjadi kesalahan transaksi', 'error');
         }
     };
 
+    const getCurrentStock = (productId) => {
+      const product = products.find(p => p.id === productId);
+      return product ? product.stock : '-';
+    };
+
     // Hitungan Summary Drawer
-    const totalQty = pendingSales.reduce((a, b) => a + b.qty, 0);
     const totalRevenue = pendingSales.reduce((a, b) => a + b.subtotal, 0);
 
-    // Hitungan Summary Akhir (Struk)
+    // Hitungan Summary Akhir
     const totalSummaryQty = summarySales?.items.reduce((a, b) => a + b.qty, 0) || 0;
     const totalSummaryRevenue = summarySales?.items.reduce((a, b) => a + b.subtotal, 0) || 0;
     const totalSummaryProfit = summarySales?.items.reduce((a, b) => a + b.profit, 0) || 0;
 
     return (
-        <div className="animate-fade-in pb-32"> {/* pb-32 untuk memberi ruang bagi drawer bawah */}
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Kasir / Penjualan</h2>
-
-            {/* --- SEARCH BAR (GAYA BARU) --- */}
+        <div className="animate-fade-in pb-32"> 
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Catatan Penjualan</h2>
             <div className="bg-white p-4 rounded-xl shadow-sm mb-6 border">
-                 <div className="w-full md:w-1/3 flex items-center px-3 py-2 bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm focus-within:ring-2 focus-within:ring-blue-100">
+                 <div className="w-full md:w-2/3 flex items-center px-3 py-2 bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm focus-within:ring-2 focus-within:ring-blue-100">
                     <Search className="text-gray-400 mr-2 shrink-0" size={20} />
                     <input 
                         type="text" 
-                        placeholder="Cari Barang..." 
+                        placeholder="Cari Barang" 
                         className="w-full outline-none bg-transparent border-none p-0 text-gray-700 placeholder-gray-400"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -163,13 +154,12 @@ export default function Sales() {
                 </div>
             </div>
 
-            {/* --- TABEL PRODUK --- */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
                 <table className="w-full text-left">
                     <thead className="bg-gray-50 border-b text-gray-600 text-sm uppercase tracking-wider">
                         <tr>
                             <th className="p-4">Produk</th>
-                            <th className="p-4">Harga</th>
+                            <th className="p-4">Harga Jual</th>
                             <th className="p-4 text-center">Sisa Stok</th>
                             <th className="p-4 text-center w-48">Input Jumlah</th>
                         </tr>
@@ -222,18 +212,16 @@ export default function Sales() {
                 )}
             </div>
 
-            {/* --- DRAWER KERANJANG (FLOATING BOTTOM PANEL) --- */}
             {pendingSales.length > 0 && !summarySales && (
-                <div className={`fixed bottom-0 left-0 w-full bg-white shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] transition-transform duration-300 z-40 border-t ${panelOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'}`}>
+                <div className={`sticky bottom-0 left-0 w-full bg-white shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] transition-transform duration-300 z-40 border-t ${panelOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'}`}>
                     
-                    {/* Header Drawer (Selalu Terlihat) */}
                     <div 
                         className="bg-gray-900 text-white p-4 flex justify-between items-center cursor-pointer hover:bg-gray-800 transition"
                         onClick={() => setPanelOpen(!panelOpen)}
                     >
                         <div className="flex items-center font-bold text-lg">
                             <ShoppingCart className="mr-3" />
-                            {pendingSales.length} Item di Keranjang
+                            {pendingSales.length} Barang di Catatan Penjualan
                         </div>
                         <div className="flex items-center space-x-6">
                             <div className="text-right">
@@ -243,17 +231,17 @@ export default function Sales() {
                             {panelOpen ? <ChevronDown /> : <ChevronUp />}
                         </div>
                     </div>
-
-                    {/* Isi Drawer (Tabel Keranjang) */}
+=
                     <div className="p-6 max-h-[60vh] overflow-y-auto bg-gray-50">
                         <table className="w-full bg-white rounded-lg shadow-sm overflow-hidden">
                             <thead className="bg-gray-100 border-b text-left text-sm font-bold text-gray-600">
                                 <tr>
                                     <th className="p-3">Nama Barang</th>
-                                    <th className="p-3">Harga</th>
-                                    <th className="p-3">Qty</th>
+                                    <th className="p-3">Harga Jual</th>
+                                    <th className="p-3">Sisa Stok</th>
+                                    <th className="p-3">Jumlah Terjual</th>
                                     <th className="p-3">Subtotal</th>
-                                    <th className="p-3 text-center">Aksi</th>
+                                    <th className="p-3 text-center">Hapus</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y">
@@ -261,12 +249,15 @@ export default function Sales() {
                                     <tr key={item.id}>
                                         <td className="p-3 font-medium">{item.name}</td>
                                         <td className="p-3">Rp {item.sell_price.toLocaleString()}</td>
+                                        <td className="p-3">{item.stock - item.qty}</td>
                                         <td className="p-3">
                                             <input 
                                                 type="number" 
                                                 className="w-16 border rounded p-1 text-center"
+                                                min={0}
+                                                max={item.stock}
                                                 value={item.qty}
-                                                onChange={(e) => updateQtyInCart(item.id, parseInt(e.target.value) || 0)}
+                                                onChange={(e) => updateQtyInCart(item.id, Math.min(Number(e.target.value) || 0, item.stock))}
                                             />
                                         </td>
                                         <td className="p-3 font-bold">Rp {item.subtotal.toLocaleString()}</td>
@@ -288,56 +279,116 @@ export default function Sales() {
                                 onClick={handleRecord}
                                 className="bg-green-600 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-green-700 hover:shadow-xl transition transform active:scale-95 flex items-center"
                             >
-                                <Check className="mr-2" /> PROSES PEMBAYARAN
+                                <Check className="mr-2" /> Proses Transaksi
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* --- MODAL STRUK / SUMMARY --- */}
             {summarySales && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fade-in backdrop-blur-sm">
-                    <div className="bg-white p-8 rounded-2xl w-[500px] shadow-2xl">
-                        <div className="text-center border-b pb-4 mb-4">
-                            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <Check size={32} />
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-800">Transaksi Berhasil!</h3>
-                            <p className="text-gray-500 text-sm">{new Date().toLocaleString()}</p>
-                        </div>
+              <div className='fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm overflow-auto'>
+                  <div className='bg-white w-full max-w-5xl mt-16 mb-10 rounded-2xl shadow-xl border p-6'>
+                  <div className='text-center mb-6'>
+                    <h2 className='text-2xl font-bold text-green-600'>
+                      Transaksi Berhasil Dicatat
+                    </h2>
+                    <p className='text-sm text-gray-500 mt-1'>
+                      {new Date().toLocaleString()}
+                    </p>
+                  </div>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead className="bg-blue-500 text-white">
+                      <tr>
+                        <th className="border border-blue-400 p-3 text-center">Nama Barang</th>
+                        <th className="border border-blue-400 p-3 text-center">Harga Jual</th>
+                        <th className="border border-blue-400 p-3 text-center">Sisa Stok</th>
+                        <th className="border border-blue-400 p-3 text-center">Jumlah Terjual</th>
+                        <th className="border border-blue-400 p-3 text-center">Pendapatan</th>
+                        <th className="border border-blue-400 p-3 text-center">Laba</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {summarySales.items.map((item) => (
+                        <tr key={item.id} className="hover:bg-gray-50">
+                          <td className="border p-3 font-medium">
+                            {item.product_name}
+                          </td>
+                          <td className="border p-3 text-right">
+                            Rp {item.sell_price.toLocaleString()}
+                          </td>
+                          <td className="border p-3 text-center">
+                            {getCurrentStock(item.product_id)}
+                          </td>
+                          <td className="border p-3 text-center font-semibold">
+                            {item.qty}
+                          </td>
+                          <td className="border p-3 text-right">
+                            Rp {item.subtotal.toLocaleString()}
+                          </td>
+                          <td className="border p-3 text-right text-green-600 font-semibold">
+                            Rp {item.profit.toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
 
-                        <div className="space-y-3 mb-6">
-                            <div className="flex justify-between text-gray-600">
-                                <span>Total Item</span>
-                                <span className="font-bold">{totalSummaryQty} pcs</span>
-                            </div>
-                            <div className="flex justify-between text-gray-800 text-lg">
-                                <span>Total Pendapatan</span>
-                                <span className="font-bold">Rp {totalSummaryRevenue.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between text-green-600 text-sm bg-green-50 p-2 rounded">
-                                <span>Estimasi Keuntungan</span>
-                                <span className="font-bold">+ Rp {totalSummaryProfit.toLocaleString()}</span>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <button 
-                                onClick={() => window.print()} 
-                                className="flex-1 border border-gray-300 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50"
-                            >
-                                Cetak
-                            </button>
-                            <button 
-                                onClick={() => setSummarySales(null)} 
-                                className="flex-1 bg-blue-600 py-3 rounded-xl font-bold text-white hover:bg-blue-700"
-                            >
-                                Transaksi Baru
-                            </button>
-                        </div>
-                    </div>
+                      <tr className="bg-blue-400 font-bold">
+                        <td className="text-white p-3" colSpan={3}>
+                          Total
+                        </td>
+                        <td className="border p-3 text-center bg-blue-100">
+                          {totalSummaryQty}
+                        </td>
+                        <td className="border p-3 text-right bg-blue-100">
+                          Rp {totalSummaryRevenue.toLocaleString()}
+                        </td>
+                        <td className="border p-3 text-right bg-blue-100 text-green-700">
+                          Rp {totalSummaryProfit.toLocaleString()}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+
+                <div className="mt-6 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className='text-xl font-bold'>Total barang terjual</span>
+                    <span className="text-xl font-bold">{totalSummaryQty}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className='text-xl font-bold'>Total Pendapatan</span>
+                    <span className="text-xl font-bold">
+                      Rp {totalSummaryRevenue.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-green-600">
+                    <span className='text-xl font-bold'>Total Keuntungan</span>
+                    <span className="text-xl font-bold">
+                      Rp {totalSummaryProfit.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between mt-8">
+                  <button
+                    onClick={() => window.print()}
+                    className="px-6 py-3 border bg-gray-300 rounded-xl font-bold hover:bg-gray-400"
+                  >
+                    Cetak
+                  </button>
+
+                  <button
+                    onClick={() => setSummarySales(null)}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700"
+                  >
+                    Transaksi Baru
+                  </button>
+                </div>
+              </div>
+              
+            </div>
             )}
         </div>
     );
