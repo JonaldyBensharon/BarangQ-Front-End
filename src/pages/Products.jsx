@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import { useEffect, useState } from 'react';
 import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import Swal from 'sweetalert2';

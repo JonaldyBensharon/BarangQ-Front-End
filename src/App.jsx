@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu, LogOut } from 'lucide-react';
-
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';

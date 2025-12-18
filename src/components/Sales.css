@@ -1,16 +1,12 @@
-/* ===============================
-   Container Utama
-   =============================== */
+/* Container Utama */
 .sales-container {
     padding: 20px;
     font-family: Arial, sans-serif;
-    background-color: #ffffff; 
+    background-color: #ffffff;
     color: #333;
 }
 
-/* ===============================
-   Panel Pencarian
-   =============================== */
+/*  Panel Pencarian */
 .search-panel {
     display: flex;
     align-items: center;
@@ -26,9 +22,7 @@
     outline: none;
 }
 
-/* ===============================
-   Tabel Produk Utama & Detail
-   =============================== */
+/* Tabel Produk Utama dan Detail */
 .products-table,
 .summary-panel table {
     width: 100%;
@@ -55,9 +49,7 @@
     background-color: #e6f2ff;
 }
 
-/* ===============================
-   Input Qty dan Tombol
-   =============================== */
+/* Input Qty */
 .qty-input-cell {
     display: flex;
     align-items: center;
@@ -65,10 +57,10 @@
 }
 
 .qty-wrapper {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 4px;
-    position: relative;
 }
 
 .qty-wrapper input[type="number"] {
@@ -97,10 +89,10 @@
     opacity: 0.5;
 }
 
-/* Tombol konfirmasi di kanan input, tidak menggeser input */
+/* Tombol konfirmasi */
 .qty-wrapper .confirm-btn {
     position: absolute;
-    right: -30px;
+    right: -45px;
     top: 50%;
     transform: translateY(-50%);
     padding: 4px 8px;
@@ -116,60 +108,85 @@
     background-color: #0b78e3;
 }
 
-/* ===============================
-   Panel Detail Penjualan sebagai Drawer
-   =============================== */
 .detail-drawer {
-    position: fixed;
+    position: sticky;
     bottom: 0;
     left: 0;
     width: 100%;
     background-color: #fafafa;
     border-top: 1px solid #ddd;
     box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, max-height 0.3s ease;
-    z-index: 1000;
-    overflow: hidden;
+    transition: height 0.3s ease;
+    z-index: 1200;
+    overflow: visible;
 }
 
 .detail-drawer.collapsed {
-    height: 60px; /* tinggi mini drawer */
+    height: 100px;
 }
 
 .detail-drawer.expanded {
-    height: 70%; /* tinggi full drawer saat dibuka, bisa sesuaikan */
-}
-
-.drawer-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 8px;
-    position: relative;
-    border-bottom: 1px solid #ddd;
-    background-color: #fff;
-}
-
-.drawer-header h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #1e90ff;
+    height: 70vh;
 }
 
 .drawer-toggle {
     position: absolute;
-    top: 50%;
+    top: -30px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    padding: 6px;
+    cursor: pointer;
+    z-index: 20;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.drawer-toggle button {
     background: none;
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drawer-title {
+    text-align: center;
+    padding: 12px 0 8px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #1e90ff;
+    border-bottom: 1px solid #ddd;
+}
+
+.drawer-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 14px;
+    font-size: 14px;
+}
+
+.drawer-summary button {
+    padding: 6px 14px;
+    font-size: 14px;
+    background-color: #1e90ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.drawer-summary button:hover {
+    background-color: #0b78e3;
 }
 
 .drawer-content {
-    padding: 10px 20px;
+    padding: 14px 20px 24px;
     overflow-y: auto;
-    max-height: calc(100% - 60px); /* menyesuaikan tinggi header */
+    height: calc(100% - 100px);
 }
 
 .drawer-content table {
@@ -186,6 +203,25 @@
     font-size: 14px;
 }
 
+.drawer-content input[type="number"] {
+    width: 70px;
+    padding: 6px;
+    font-size: 14px;
+    text-align: center;
+
+    background-color: #ffffff;
+    border: 1.5px solid #999;
+    border-radius: 4px;
+
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.drawer-content input[type="number"]:focus {
+    border-color: #1e90ff;
+    box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.25);
+}
+
 .drawer-content th {
     background-color: #f2f2f2;
 }
@@ -195,10 +231,11 @@
     background-color: #f2f2f2;
 }
 
-.record-btn {
-    display: block;
+.drawer-content button {
     width: 100%;
-    padding: 8px 0;
+    margin-top: 14px;
+    margin-bottom: 10px;
+    padding: 10px;
     font-size: 14px;
     background-color: #1e90ff;
     color: #fff;
@@ -207,13 +244,10 @@
     cursor: pointer;
 }
 
-.record-btn:hover {
+.drawer-content button:hover {
     background-color: #0b78e3;
 }
 
-/* ===============================
-   Panel Rangkuman Penjualan
-   =============================== */
 .summary-panel {
     border: 1px solid #ddd;
     padding: 15px;
@@ -223,8 +257,17 @@
 
 .summary-panel h3 {
     margin-top: 0;
-    margin-bottom: 10px;
-    color: #1e90ff;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #0b78e3;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.summary-panel p {
+    margin: 6px 0;
+    font-size: 14px;
 }
 
 .summary-panel .total-row {
@@ -233,11 +276,12 @@
 }
 
 .summary-totals {
-    margin-top: 10px;
+    margin-top: 15px;
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    font-weight: bold;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .summary-totals button {
@@ -255,9 +299,32 @@
     background-color: #888;
 }
 
-/* ===============================
-   Responsiveness
-   =============================== */
+/* Header tabel */
+.products-table thead th,
+.detail-drawer table thead th,
+.summary-panel table thead th {
+    background-color:  #4882ff;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+}
+
+.total-row td {
+    font-weight: 600;
+}
+
+.total-row td:first-child {
+    background-color: #4882ff;
+    color: white;
+    text-align: center;
+}
+
+.total-row td:not(:first-child){
+    background-color: #bfdbfe;
+    color: #1e3a8a;
+    text-align: center;
+}
+
 @media screen and (max-width: 768px) {
     .products-table th,
     .products-table td,
@@ -269,11 +336,6 @@
 
     .qty-wrapper input[type="number"] {
         width: 45px;
-    }
-
-    .qty-wrapper .confirm-btn {
-        right: -28px;
-        padding: 3px 6px;
     }
 
     .detail-drawer.expanded {
