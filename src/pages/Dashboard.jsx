@@ -6,7 +6,6 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ income: 0, products: 0, sales: 0, lowStock: [] });
   const [store, setStore] = useState({});
   
-  // URL Backend untuk akses gambar
   const API_URL = 'http://localhost:5001';
 
   useEffect(() => {

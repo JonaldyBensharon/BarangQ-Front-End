@@ -10,7 +10,7 @@ export default function AddStock() {
   const handleAddStock = async (e) => {
     e.preventDefault();
     try {
-        const res = await api.post('/stocks/add-stock', {
+        const res = await api.post('/api/stocks/add-stock', {
             search_term: input,
             qty: Number(qty)
         });

@@ -17,7 +17,7 @@ export default function Products() {
   useEffect(() => { fetchProducts(); }, []);
 
   const fetchProducts = async () => {
-    const res = await api.get('/products');
+    const res = await api.get('/api/products');
     setProducts(res.data);
   };
 
@@ -37,10 +37,10 @@ export default function Products() {
     e.preventDefault();
     try {
         if (isEdit) {
-            await api.put(`/products/${form.id}`, form);
+            await api.put(`/api/products/${form.id}`, form);
             Swal.fire('Sukses', 'Data barang berhasil diperbarui', 'success');
         } else {
-            await api.post(`/products`, form);
+            await api.post(`/api/products`, form);
             Swal.fire('Berhasil', 'Barang berhasil ditambahkan', 'success');
         }
         setShowModal(false);
@@ -60,7 +60,7 @@ export default function Products() {
         showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            await api.delete(`/products/${id}`);
+            await api.delete(`/api/products/${id}`);
             fetchProducts();
             Swal.fire('Terhapus!', 'Barang telah dihapus.', 'success');
         }
