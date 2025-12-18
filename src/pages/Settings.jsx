@@ -212,7 +212,7 @@ export default function Settings() {
                             src={
                                 form.store_image 
                                     ? (form.store_image.startsWith('/uploads') ? `${API_URL}${form.store_image}` : form.store_image)
-                                    : "https://via.placeholder.com/150?text=No+Image"
+                                    : "https://ui-avatars.com/api/?name=Error&background=red"
                             } 
                             alt="Logo Toko" 
                             className="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-blue-50"

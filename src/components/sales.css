@@ -80,7 +80,6 @@
     border-radius: 4px;
 }
 
-/* Tombol panah atas/bawah */
 .qty-wrapper button {
     padding: 2px 6px;
     border: 1px solid #ccc;
@@ -97,7 +96,6 @@
     opacity: 0.5;
 }
 
-/* Tombol konfirmasi di kanan input, tidak menggeser input */
 .qty-wrapper .confirm-btn {
     position: absolute;
     right: -30px;
@@ -133,11 +131,11 @@
 }
 
 .detail-drawer.collapsed {
-    height: 60px; /* tinggi mini drawer */
+    height: 60px; 
 }
 
 .detail-drawer.expanded {
-    height: 70%; /* tinggi full drawer saat dibuka, bisa sesuaikan */
+    height: 70%; 
 }
 
 .drawer-header {
@@ -169,7 +167,7 @@
 .drawer-content {
     padding: 10px 20px;
     overflow-y: auto;
-    max-height: calc(100% - 60px); /* menyesuaikan tinggi header */
+    max-height: calc(100% - 60px); 
 }
 
 .drawer-content table {

@@ -33,7 +33,7 @@ export default function Dashboard() {
             src={
                 store.store_image 
                     ? (store.store_image.startsWith('/uploads') ? `${API_URL}${store.store_image}` : store.store_image)
-                    : "https://ui-avatars.com/api/?name=Toko&background=random"
+                    : "https://ui-avatars.com/api/?name=Error&background=red"
             } 
             alt="Logo Toko"
             className="w-24 h-24 rounded-full border-4 border-gray-600 mb-4 md:mb-0 md:mr-6 object-cover bg-white"
@@ -95,7 +95,7 @@ export default function Dashboard() {
                 ))
             ) : (
                 <div className="col-span-full text-center py-8 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <p>✅ Aman! Tidak ada produk dengan stok menipis.</p>
+                    <p>✅ Aman! Tidak ada produk dengan stok menipis(daftar akan ditampilkan jika ada barang dengan stok kurang dari 5).</p>
                 </div>
             )}
         </div>
