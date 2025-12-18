@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/immutability */
+console.log('Sales jsx baru dipakai');
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { ChevronUp, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import api from '../components/api';
 import "../components/Sales.css";
 
@@ -21,114 +23,133 @@ export default function Sales() {
             const res = await api.get('/products');
             setProducts(res.data);
             setFilteredProducts(res.data);
-        } catch(err) {
+        } catch {
             Swal.fire('Gagal', 'Tidak bisa memuat data produk', 'error');
         }
     };
 
     useEffect(() => {
         const term = searchTerm.trim().toLowerCase();
-        const filtered = products.filter(p => 
-            p.name.toLowerCase().includes(term) || (p.code && p.code.toLowerCase().includes(term))
+        setFilteredProducts(
+            products.filter(p =>
+                p.name.toLowerCase().includes(term) ||
+                (p.code && p.code.toLowerCase().includes(term))
+            )
         );
-        setFilteredProducts(filtered);
     }, [searchTerm, products]);
 
     const addToPending = (product, qty) => {
-        if(qty <= 0 || qty > product.stock){
-            return Swal.fire('Error', 'Jumlah tidak valid', 'error');
+        if (qty <= 0 || qty > product.stock) {
+            Swal.fire('Error', 'Jumlah tidak valid', 'error');
+            return;
         }
+
         const exists = pendingSales.find(item => item.id === product.id);
-        if(exists){
-            const updated = pendingSales.map(item => 
-                item.id === product.id ? {...item, qty: item.qty + qty, subtotal: (item.qty + qty) * item.sell_price} : item
+
+        if (exists) {
+            setPendingSales(
+                pendingSales.map(item =>
+                    item.id === product.id
+                        ? { ...item, qty: item.qty + qty, subtotal: (item.qty + qty) * item.sell_price }
+                        : item
+                )
             );
-            setPendingSales(updated);
         } else {
-            setPendingSales([...pendingSales, { 
-                id: product.id,
-                name: product.name,
-                sell_price: parseFloat(product.sell_price),
-                stock: parseInt(product.stock),
-                qty: qty,
-                subtotal: parseFloat(product.sell_price) * qty
-            }]);
+            setPendingSales([
+                ...pendingSales,
+                {
+                    id: product.id,
+                    name: product.name,
+                    sell_price: Number(product.sell_price),
+                    stock: Number(product.stock),
+                    qty,
+                    subtotal: Number(product.sell_price) * qty
+                }
+            ]);
         }
-        Swal.fire('Berhasil', 'Barang ditambahkan ke detail penjualan', 'success');
     };
 
     const updateQty = (id, qty) => {
-        if(qty < 0) return;
-        const updated = pendingSales.map(item => {
-            if(item.id === id){
-                if(qty === 0) return null;
-                return {...item, qty, subtotal: item.sell_price * qty};
-            }
-            return item;
-        }).filter(Boolean);
-        setPendingSales(updated);
+        if (qty < 0) return;
+
+        setPendingSales(
+            pendingSales
+                .map(item =>
+                    item.id === id
+                        ? qty === 0
+                            ? null
+                            : { ...item, qty, subtotal: item.sell_price * qty }
+                        : item
+                )
+                .filter(Boolean)
+        );
     };
 
     const toggleHighlight = (id) => {
-        setHighlightedId(prev => prev === id ? null : id);
+        setHighlightedId(prev => (prev === id ? null : id));
     };
 
-    const totalQty = pendingSales.reduce((acc, item) => acc + item.qty, 0);
-    const totalRevenue = pendingSales.reduce((acc, item) => acc + item.subtotal, 0);
+    const totalQty = pendingSales.reduce((a, b) => a + b.qty, 0);
+    const totalRevenue = pendingSales.reduce((a, b) => a + b.subtotal, 0);
 
     const handleConfirmQty = (product, qty) => {
         addToPending(product, qty);
-        const updatedProducts = products.map(p => 
-            p.id === product.id ? {...p, stock: p.stock - qty} : p
-        );
-        setProducts(updatedProducts);
-        setFilteredProducts(updatedProducts);
-        setTempQtys({...tempQtys, [product.id]: 0});
+
+        setProducts(products.map(p =>
+            p.id === product.id ? { ...p, stock: p.stock - qty } : p
+        ));
+
+        setFilteredProducts(filteredProducts.map(p =>
+            p.id === product.id ? { ...p, stock: p.stock - qty } : p
+        ));
+
+        setTempQtys({ ...tempQtys, [product.id]: 0 });
         setHighlightedId(null);
-        setPanelOpen(true); 
     };
 
     const handleRecord = async () => {
-        if(pendingSales.length === 0){
-            return Swal.fire('Info', 'Belum ada barang untuk dicatat', 'info');
+        if (pendingSales.length === 0) {
+            Swal.fire('Info', 'Belum ada barang untuk dicatat', 'info');
+            return;
         }
 
-        const payloadItems = pendingSales.map(item => ({
-            product_id: item.id,
-            qty: item.qty
-        }));
-
         try {
-            const res = await api.post('/transactions', { items: payloadItems });
-            const { transaction_id } = res.data;
+            const payload = pendingSales.map(i => ({
+                product_id: i.id,
+                qty: i.qty
+            }));
 
-            const summaryRes = await api.get(`/transactions/${transaction_id}`);
-            setSummarySales(summaryRes.data);
+            const res = await api.post('/transactions', { items: payload });
+            const summary = await api.get(`/transactions/${res.data.transaction_id}`);
 
-            Swal.fire('Sukses', 'Penjualan dicatat!', 'success');
-
+            setSummarySales(summary.data);
             setPendingSales([]);
             setPanelOpen(false);
 
+            Swal.fire('Sukses', 'Penjualan dicatat!', 'success');
             fetchProducts();
-        } catch(err) {
-            const msg = err.response?.data?.error || 'Terjadi kesalahan saat mencatat penjualan';
-            Swal.fire('Gagal', msg, 'error');
+        } catch (err) {
+            Swal.fire('Gagal', err.response?.data?.error || 'Terjadi kesalahan', 'error');
         }
     };
 
-    const totalSummaryQty = summarySales?.items.reduce((acc, item) => acc + item.qty, 0) || 0;
-    const totalSummaryRevenue = summarySales?.items.reduce((acc, item) => acc + item.subtotal, 0) || 0;
-    const totalSummaryProfit = summarySales?.items.reduce((acc, item) => acc + item.profit, 0) || 0;
+    const getCurrentStock = (productId) => {
+      const product = products.find(p => p.id === productId);
+      return product ? product.stock : '-';
+    };
+
+    const totalSummaryQty = summarySales?.items.reduce((a, b) => a + b.qty, 0) || 0;
+    const totalSummaryRevenue = summarySales?.items.reduce((a, b) => a + b.subtotal, 0) || 0;
+    const totalSummaryProfit = summarySales?.items.reduce((a, b) => a + b.profit, 0) || 0;
 
     return (
         <div className="sales-container">
             {!summarySales && (
                 <>
                     <div className="search-panel">
-                        <input 
-                            type="text" 
-                            placeholder="Cari produk" 
+                        <input
+                            type="text"
+                            placeholder="Cari produk"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
@@ -146,59 +167,66 @@ export default function Sales() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredProducts.map((product, idx) => {
-                                const tempQty = tempQtys[product.id] || 0;
-                                return (
-                                    <tr key={product.id} className={highlightedId === product.id ? 'highlight' : ''}>
-                                        <td>{idx + 1}</td>
-                                        <td>{product.code || '-'}</td>
-                                        <td>{product.name}</td>
-                                        <td>{product.sell_price}</td>
-                                        <td>{product.stock}</td>
-                                        <td className="qty-input-cell">
-                                            <div className="qty-wrapper">
-                                                <button 
-                                                    disabled={tempQty <= 0} 
-                                                    onClick={() => setTempQtys({...tempQtys, [product.id]: tempQty - 1})}
+                            {filteredProducts.map((p, i) => (
+                                <tr key={p.id} className={highlightedId === p.id ? 'highlight' : ''}>
+                                    <td>{i + 1}</td>
+                                    <td>{p.code || '-'}</td>
+                                    <td>{p.name}</td>
+                                    <td>{p.sell_price}</td>
+                                    <td>{p.stock}</td>
+                                    <td className="qty-input-cell">
+                                        <div className="qty-wrapper">
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                max={p.stock}
+                                                value={tempQtys[p.id] || 0}
+                                                onFocus={() => toggleHighlight(p.id)}
+                                                onChange={e =>
+                                                    setTempQtys({
+                                                        ...tempQtys,
+                                                        [p.id]: Math.min(Number(e.target.value) || 0, p.stock)
+                                                    })
+                                                }
+                                            />
+                                            {(tempQtys[p.id] || 0) > 0 && (
+                                                <button
+                                                    className="confirm-btn"
+                                                    onClick={() => handleConfirmQty(p, tempQtys[p.id])}
                                                 >
-                                                    <ChevronDown size={16} />
+                                                    ✔
                                                 </button>
-                                                <input 
-                                                    type="number"
-                                                    min={0}
-                                                    max={product.stock}
-                                                    value={tempQty}
-                                                    onFocus={() => toggleHighlight(product.id)}
-                                                    onChange={e => {
-                                                        const val = parseInt(e.target.value) || 0;
-                                                        setTempQtys({...tempQtys, [product.id]: Math.min(val, product.stock)});
-                                                    }}
-                                                />
-                                                <button 
-                                                    disabled={tempQty >= product.stock} 
-                                                    onClick={() => setTempQtys({...tempQtys, [product.id]: tempQty + 1})}
-                                                >
-                                                    <ChevronUp size={16} />
-                                                </button>
-                                                {tempQty > 0 && (
-                                                    <button className="confirm-btn" onClick={() => handleConfirmQty(product, tempQty)}>✔</button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
 
                     {pendingSales.length > 0 && (
                         <div className={`detail-drawer ${panelOpen ? 'expanded' : 'collapsed'}`}>
-                            <div className="drawer-header">
-                                <button className="drawer-toggle" onClick={() => setPanelOpen(!panelOpen)}>
-                                    {panelOpen ? <ArrowDown size={18}/> : <ArrowUp size={18}/>}
+                            
+                            <div className="drawer-toggle">
+                              <button onClick={() => setPanelOpen(!panelOpen)}>
+                                    {panelOpen ? <ArrowDown /> : <ArrowUp />}
                                 </button>
-                                <h3>Detail Penjualan</h3>
                             </div>
+
+                            <div className="drawer-title">
+                              <h3>Detail Penjualan</h3>
+                            </div>
+
+                            {!panelOpen && (
+                                <div className="drawer-summary">
+                                    <span>
+                                        Barang yang terjual: <strong>{pendingSales.length}</strong>
+                                    </span>
+                                    <button onClick={handleRecord}>
+                                        Catat
+                                    </button>
+                                </div>
+                            )}
 
                             {panelOpen && (
                                 <div className="drawer-content">
@@ -214,49 +242,34 @@ export default function Sales() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {pendingSales.map((item, idx) => (
-                                                <tr key={item.id} className={highlightedId === item.id ? 'highlight' : ''}>
+                                            {pendingSales.map((i, idx) => (
+                                                <tr key={i.id}>
                                                     <td>{idx + 1}</td>
-                                                    <td>{item.name}</td>
-                                                    <td>{item.sell_price}</td>
-                                                    <td>{item.stock - item.qty}</td>
-                                                    <td className="qty-input-cell">
-                                                        <div className="qty-wrapper">
-                                                            <button
-                                                                disabled={item.qty <= 0}
-                                                                onClick={() => updateQty(item.id, item.qty - 1)}
-                                                            >
-                                                                <ChevronDown size={16} />
-                                                            </button>
-                                                            <input
-                                                                type="number"
-                                                                min={0}
-                                                                max={item.stock}
-                                                                value={item.qty}
-                                                                onChange={e => {
-                                                                    const val = parseInt(e.target.value) || 0;
-                                                                    updateQty(item.id, Math.min(val, item.stock));
-                                                                }}
-                                                                onFocus={() => toggleHighlight(item.id)} />
-                                                            <button
-                                                                disabled={item.qty >= item.stock}
-                                                                onClick={() => updateQty(item.id, item.qty + 1)}
-                                                            >
-                                                                <ChevronUp size={16} />
-                                                            </button>
-                                                        </div>
+                                                    <td>{i.name}</td>
+                                                    <td>{i.sell_price}</td>
+                                                    <td>{i.stock - i.qty}</td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min={0}
+                                                            max={i.stock}
+                                                            value={i.qty}
+                                                            onChange={e =>
+                                                                updateQty(i.id, Math.min(Number(e.target.value) || 0, i.stock))
+                                                            }
+                                                        />
                                                     </td>
-                                                    <td>{item.subtotal}</td>
+                                                    <td>{i.subtotal}</td>
                                                 </tr>
                                             ))}
                                             <tr className="total-row">
-                                                <td colSpan={4}>Total Penjualan</td>
+                                                <td colSpan={4}>Total</td>
                                                 <td>{totalQty}</td>
                                                 <td>{totalRevenue}</td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <button className="record-btn" onClick={handleRecord}>Catat</button>
+                                    <button onClick={handleRecord}>Catat</button>
                                 </div>
                             )}
                         </div>
@@ -264,7 +277,7 @@ export default function Sales() {
                 </>
             )}
 
-            {summarySales && (
+             {summarySales && (
                 <div className="summary-panel">
                     <h3>Rangkuman Penjualan</h3>
                     <table>
@@ -285,7 +298,7 @@ export default function Sales() {
                                     <td>{idx + 1}</td>
                                     <td>{item.product_name}</td>
                                     <td>{item.sell_price}</td>
-                                    <td>{item.stock}</td>
+                                    <td>{getCurrentStock(item.product_id)}</td>
                                     <td>{item.qty}</td>
                                     <td>{item.subtotal}</td>
                                     <td>{item.profit}</td>
@@ -300,9 +313,9 @@ export default function Sales() {
                         </tbody>
                     </table>
                     <div className="summary-totals">
-                        <p>Jumlah barang yang terjual: {totalSummaryQty}</p>
-                        <p>Total Pendapatan: {totalSummaryRevenue}</p>
-                        <p>Total Keuntungan: {totalSummaryProfit}</p>
+                        <p><pre>Jumlah barang yang terjual : {totalSummaryQty} </pre></p>
+                        <p><pre>Total Pendapatan           : Rp{totalSummaryRevenue}</pre></p>
+                        <p><pre>Total Keuntungan           : Rp{totalSummaryProfit}</pre></p>
                         <button onClick={() => setSummarySales(null)}>Kembali</button>
                     </div>
                 </div>
