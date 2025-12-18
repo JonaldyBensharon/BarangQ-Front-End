@@ -63,7 +63,6 @@ export default function Settings() {
     if (file) {
       setSelectedFile(file);
       setIsImageDeleted(false); 
-      // Preview lokal (blob)
       const previewUrl = URL.createObjectURL(file);
       setForm({ ...form, store_image: previewUrl });
     }
