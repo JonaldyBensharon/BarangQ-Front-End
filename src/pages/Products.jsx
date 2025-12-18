@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/immutability */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -10,6 +10,9 @@ export default function Products() {
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false); 
   
+  // URL Backend untuk akses gambar upload
+  const API_URL = 'http://localhost:5001';
+
   // State Form
   const [form, setForm] = useState({
     id: '', code: '', name: '', brand: '', description: '', image_url: '', buy_price: '', sell_price: '', stock: ''
@@ -18,8 +21,13 @@ export default function Products() {
   useEffect(() => { fetchProducts(); }, []);
 
   const fetchProducts = async () => {
-    const res = await api.get('/products');
-    setProducts(res.data);
+    try {
+        // PERBAIKAN: Pakai /api/products
+        const res = await api.get('/api/products');
+        setProducts(res.data);
+    } catch (err) {
+        console.error("Gagal ambil produk", err);
+    }
   };
 
   const openAddModal = () => {
@@ -38,10 +46,10 @@ export default function Products() {
     e.preventDefault();
     try {
         if (isEdit) {
-            await api.put(`/products/${form.id}`, form);
+            await api.put(`/api/products/${form.id}`, form);
             Swal.fire('Sukses', 'Data barang berhasil diperbarui', 'success');
         } else {
-            await api.post(`/products`, form);
+            await api.post(`/api/products`, form);
             Swal.fire('Berhasil', 'Barang berhasil ditambahkan', 'success');
         }
         setShowModal(false);
@@ -50,7 +58,7 @@ export default function Products() {
         Swal.fire({
             icon: 'error',
             title: 'Gagal',
-            text: err.response?.data || 'Terjadi kesalahan'
+            text: err.response?.data?.error || 'Terjadi kesalahan'
         });
     }
   };
@@ -61,9 +69,14 @@ export default function Products() {
         showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            await api.delete(`/products/${id}`);
-            fetchProducts();
-            Swal.fire('Terhapus!', 'Barang telah dihapus.', 'success');
+            try {
+                // PERBAIKAN: Pakai /api/products
+                await api.delete(`/api/products/${id}`);
+                fetchProducts();
+                Swal.fire('Terhapus!', 'Barang telah dihapus.', 'success');
+            } catch (err) {
+                Swal.fire('Error', 'Gagal menghapus barang', 'error');
+            }
         }
     })
   }
@@ -76,11 +89,18 @@ export default function Products() {
 
       {/* Kontrol Atas */}
       <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex justify-between items-center border">
-        <div className="relative w-1/3">
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
-            <input type="text" placeholder="Cari Nama Barang..." className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => setSearch(e.target.value)}/>
+        
+        {/* --- PENCARIAN (Gaya Baru: Clean, No Border, Flexbox) --- */}
+        <div className="w-1/3 flex items-center px-3 py-2 bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm focus-within:ring-2 focus-within:ring-blue-100">
+            <Search className="text-gray-400 mr-2 shrink-0" size={20} />
+            <input 
+                type="text" 
+                placeholder="Cari Nama Barang..." 
+                className="w-full outline-none bg-transparent border-none p-0 text-gray-700 placeholder-gray-400"
+                onChange={(e) => setSearch(e.target.value)}
+            />
         </div>
+
         <button onClick={openAddModal} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex items-center hover:bg-blue-700 transition">
             <Plus size={20} className="mr-2"/> Tambah Barang Baru
         </button>
@@ -103,11 +123,21 @@ export default function Products() {
                 {filtered.map((item) => (
                     <tr key={item.id} className="hover:bg-blue-50">
                         <td className="p-4">
-                            <img src={item.image_url || "https://via.placeholder.com/50"} alt="" className="w-12 h-12 object-cover rounded bg-gray-200"/>
+                            {/* PERBAIKAN: Logika Gambar Aman & Support Upload */}
+                            <img 
+                                src={
+                                    item.image_url 
+                                        ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`)
+                                        : "https://placehold.co/50" 
+                                } 
+                                alt="" 
+                                className="w-12 h-12 object-cover rounded bg-gray-200 border"
+                                onError={(e) => {e.target.src = "https://placehold.co/50?text=No+Img"}}
+                            />
                         </td>
                         <td className="p-4">
                             <div className="font-bold text-gray-800">{item.name}</div>
-                            <div className="text-xs text-gray-500">{item.code}</div>
+                            <div className="text-xs text-gray-500">{item.code || '-'}</div>
                         </td>
                         <td className="p-4 text-gray-600">{item.brand || '-'}</td>
                         <td className="p-4 font-medium">Rp {parseInt(item.sell_price).toLocaleString()}</td>
@@ -120,37 +150,67 @@ export default function Products() {
                 ))}
             </tbody>
         </table>
+        {filtered.length === 0 && (
+            <div className="p-8 text-center text-gray-400">Tidak ada barang yang ditemukan.</div>
+        )}
       </div>
 
       {/* MODAL TAMBAH/EDIT */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in backdrop-blur-sm">
             <div className="bg-white p-6 rounded-2xl w-[600px] shadow-2xl max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center mb-4 border-b pb-2">
-                    <h3 className="text-xl font-bold">{isEdit ? 'Edit Barang' : 'Tambah Barang Baru'}</h3>
-                    <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-red-500"><X/></button>
+                <div className="flex justify-between items-center mb-6 border-b pb-4">
+                    <h3 className="text-xl font-bold text-gray-800">{isEdit ? 'Edit Barang' : 'Tambah Barang Baru'}</h3>
+                    <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-red-500 transition"><X/></button>
                 </div>
                 <form onSubmit={handleSave} className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Kode Barang (Opsional)" className="border p-2 rounded" 
-                        value={form.code} onChange={e => setForm({...form, code: e.target.value})} />
-                    <input type="text" placeholder="Merk (Opsional)" className="border p-2 rounded" 
-                        value={form.brand} onChange={e => setForm({...form, brand: e.target.value})} />
-                    <input type="text" required placeholder="Nama Barang" className="border p-2 rounded col-span-2" 
-                        value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
-                    <textarea placeholder="Deskripsi" className="border p-2 rounded col-span-2" rows="2"
-                        value={form.description} onChange={e => setForm({...form, description: e.target.value})}></textarea>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500">KODE BARANG</label>
+                        <input type="text" placeholder="Contoh: BRG-001" className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.code} onChange={e => setForm({...form, code: e.target.value})} />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500">MERK / BRAND</label>
+                        <input type="text" placeholder="Contoh: Indofood" className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.brand} onChange={e => setForm({...form, brand: e.target.value})} />
+                    </div>
                     
-                    <input type="number" required placeholder="Harga Modal" className="border p-2 rounded" 
-                        value={form.buy_price} onChange={e => setForm({...form, buy_price: e.target.value})} />
-                    <input type="number" required placeholder="Harga Jual" className="border p-2 rounded" 
-                        value={form.sell_price} onChange={e => setForm({...form, sell_price: e.target.value})} />
-                    
-                    <input type="number" required placeholder="Stok Awal" className="border p-2 rounded" disabled={isEdit}
-                        value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} />
-                    <input type="text" placeholder="URL Gambar (Opsional)" className="border p-2 rounded" 
-                        value={form.image_url} onChange={e => setForm({...form, image_url: e.target.value})} />
+                    <div className="col-span-2 space-y-1">
+                        <label className="text-xs font-bold text-gray-500">NAMA BARANG</label>
+                        <input type="text" required placeholder="Nama Produk..." className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
+                    </div>
 
-                    <button className="col-span-2 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 mt-2">
+                    <div className="col-span-2 space-y-1">
+                        <label className="text-xs font-bold text-gray-500">DESKRIPSI</label>
+                        <textarea placeholder="Keterangan singkat..." className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" rows="2"
+                            value={form.description} onChange={e => setForm({...form, description: e.target.value})}></textarea>
+                    </div>
+                    
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500">HARGA BELI (MODAL)</label>
+                        <input type="number" required className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.buy_price} onChange={e => setForm({...form, buy_price: e.target.value})} />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500">HARGA JUAL</label>
+                        <input type="number" required className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.sell_price} onChange={e => setForm({...form, sell_price: e.target.value})} />
+                    </div>
+                    
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500">STOK AWAL</label>
+                        {/* Stok didisable saat Edit agar tidak rancu dengan fitur Tambah Stok */}
+                        <input type="number" required className="border p-2 rounded w-full bg-gray-50" disabled={isEdit}
+                            value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500">URL GAMBAR</label>
+                        <input type="text" placeholder="https://..." className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.image_url} onChange={e => setForm({...form, image_url: e.target.value})} />
+                    </div>
+
+                    <button className="col-span-2 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 mt-4 transition shadow-lg">
                         {isEdit ? 'SIMPAN PERUBAHAN' : 'TAMBAH BARANG'}
                     </button>
                 </form>

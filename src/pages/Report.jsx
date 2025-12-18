@@ -5,7 +5,7 @@ export default function Report() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    api.get('/reports').then(res => setData(res.data));
+    api.get('/api/reports').then(res => setData(res.data));
   }, []);
 
   return (

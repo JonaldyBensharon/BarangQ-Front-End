@@ -10,7 +10,7 @@ export default function AddStock() {
   const handleAddStock = async (e) => {
     e.preventDefault();
     try {
-        const res = await api.post('/stocks/add-stock', {
+        const res = await api.post('/api/stocks/add-stock', {
             search_term: input,
             qty: Number(qty)
         });
@@ -42,14 +42,17 @@ export default function AddStock() {
 
             <form onSubmit={handleAddStock} className="space-y-4">
                 <div>
-                    <label className="block font-medium mb-1">Cari Barang</label>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-3 text-gray-400" size={20}/>
-                        <input type="text" required placeholder="Nama atau Kode Barang..." 
-                            className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                            value={input} onChange={e => setInput(e.target.value)} />
-                    </div>
-                </div>
+        <label className="block font-medium mb-1">Cari Barang</label>
+        <div className="flex items-center border rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500 bg-white overflow-hidden">
+            <Search className="text-gray-400 mr-3 shrink-0" size={20} />
+            <input 
+                type="text" required placeholder="Nama atau Kode Barang..." 
+                className="w-full outline-none bg-transparent text-gray-700 placeholder-gray-400 border-none p-0"
+                value={input} 
+                onChange={e => setInput(e.target.value)} 
+            />
+        </div>
+    </div>
 
                 <div>
                     <label className="block font-medium mb-1">Jumlah Penambahan</label>
