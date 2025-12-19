@@ -33,7 +33,7 @@ export default function Report() {
                         <td className="p-4 font-bold">{item.qty}</td>
                         <td className="p-4 text-blue-600 font-bold">{formatRupiah(item.total_price)}</td>
                         <td className={`p-4 font-bold ${profitVal >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {profitVal > 0 ? '+' : ''} {formatRupiah(profitVal)}
+                            {profitVal < 0 ? '- ' : (profitVal > 0 ? '+ ' : '')}{formatRupiah(Math.abs(profitVal))}
                         </td>
                     </tr>
                 );

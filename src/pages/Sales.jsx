@@ -332,7 +332,7 @@ export default function Sales() {
                                 {formatRupiah(item.subtotal)}
                             </td>
                             <td className={`border p-3 text-right font-semibold ${profitVal >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {profitVal > 0 ? '+' : ''} {formatRupiah(profitVal)}
+                                {profitVal < 0 ? '- ' : (profitVal > 0 ? '+ ' : '')}{formatRupiah(Math.abs(profitVal))}
                             </td>
                             </tr>
                         );
@@ -349,7 +349,7 @@ export default function Sales() {
                           {formatRupiah(totalSummaryRevenue)}
                         </td>
                         <td className={`border p-3 text-right bg-blue-100 ${totalSummaryProfit >= 0 ? 'text-green-700' : 'text-red-600'}`}>
-                          {totalSummaryProfit > 0 ? '+' : ''} {formatRupiah(totalSummaryProfit)}
+                          {totalSummaryProfit < 0 ? '- ' : (totalSummaryProfit > 0 ? '+ ' : '')}{formatRupiah(Math.abs(totalSummaryProfit))}
                         </td>
                       </tr>
                     </tbody>
@@ -370,7 +370,7 @@ export default function Sales() {
                   <div className={`flex justify-between ${totalSummaryProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     <span className='text-xl font-bold'>Total Keuntungan</span>
                     <span className="text-xl font-bold">
-                      {totalSummaryProfit > 0 ? '+' : ''} {formatRupiah(totalSummaryProfit)}
+                      {totalSummaryProfit < 0 ? '- ' : (totalSummaryProfit > 0 ? '+ ' : '')}{formatRupiah(Math.abs(totalSummaryProfit))}
                     </span>
                   </div>
                 </div>
