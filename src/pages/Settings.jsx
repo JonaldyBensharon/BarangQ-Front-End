@@ -136,7 +136,10 @@ export default function Settings() {
   const handleResetViaPin = async () => {
     try {
       await api.put('/settings/verify-pin', { username: form.username, pin: pinData.pin });
-      await api.put('/settings/reset-password', { username: form.username, newPassword: pinData.newPass });
+      await api.put('/settings/reset-password', { 
+        username: form.username, 
+        newPassword: pinData.newPass 
+    });
       
       setShowPinModal(false);
       setPinData({ pin: '', newPass: '' });
@@ -236,7 +239,7 @@ export default function Settings() {
                                 onClick={() => fileInputRef.current.click()}
                                 className="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition"
                             >
-                                📷 Upload / Kamera
+                                Upload Gambar
                             </button>
                             
                             {form.store_image && (
@@ -255,7 +258,7 @@ export default function Settings() {
                 <div className="w-full lg:w-2/3 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                     <form onSubmit={handleSaveProfile} className="grid gap-5">
                         <div>
-                            <label className="block text-gray-500 text-xs font-bold mb-1 uppercase">Username</label>
+                            <label className="block text-gray-700 font-medium mb-1">Username</label>
                             <input type="text" value={form.username} disabled className="w-full border bg-gray-100 p-3 rounded-lg text-gray-500 cursor-not-allowed" />
                         </div>
                         <div>
@@ -280,34 +283,34 @@ export default function Settings() {
             {activeTab === 'security' && (
                 <div className="w-full max-w-2xl mx-auto">
                     <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
-                        <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Ganti Password</h3>
+                        <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Kelola Kata Sandi</h3>
                         <form onSubmit={handleChangePassword} className="grid gap-4">
                             <div>
-                                <label className="block text-gray-700 text-sm mb-1">Password Lama</label>
+                                <label className="block text-gray-700 text-sm mb-1">Kata Sandi Lama</label>
                                 <input type="password" value={passForm.oldPassword} onChange={e => setPassForm({...passForm, oldPassword: e.target.value})} className="w-full border p-3 rounded-lg" placeholder="******" />
                                 <button type="button" onClick={() => setShowPinModal(true)} className="text-xs text-blue-600 hover:underline mt-1 text-right block w-full">
-                                    Lupa password lama? Gunakan PIN
+                                    Lupa kata sandi lama? Gunakan PIN pemulihan akun
                                 </button>
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm mb-1">Password Baru</label>
+                                <label className="block text-gray-700 text-sm mb-1">Kata Sandi Baru</label>
                                 <input type="password" value={passForm.newPassword} onChange={e => setPassForm({...passForm, newPassword: e.target.value})} className="w-full border p-3 rounded-lg" placeholder="******" />
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm mb-1">Konfirmasi Password Baru</label>
+                                <label className="block text-gray-700 text-sm mb-1">Konfirmasi Kata Sandi Baru</label>
                                 <input type="password" value={passForm.confirmPassword} onChange={e => setPassForm({...passForm, confirmPassword: e.target.value})} className="w-full border p-3 rounded-lg" placeholder="******" />
                             </div>
                             <button type="submit" className="bg-gray-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-900 transition mt-2">
-                                UPDATE PASSWORD
+                                Perbarui Kata Sandi
                             </button>
                         </form>
                     </div>
 
                     <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
-                        <h3 className="text-lg font-bold text-red-700 mb-2">Zona Bahaya</h3>
+                        <h3 className="text-lg font-bold text-red-700 mb-2">Peringatan</h3>
                         <p className="text-red-600 text-sm mb-4">Menghapus akun akan menghilangkan semua data toko, produk, dan transaksi secara permanen.</p>
                         <button onClick={handleDeleteAccount} className="bg-red-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-700 transition w-full lg:w-auto">
-                            HAPUS AKUN PERMANEN
+                            Hapus Akun
                         </button>
                     </div>
                 </div>
@@ -317,14 +320,14 @@ export default function Settings() {
         {showPinModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl animate-fade-in">
-                    <h3 className="text-xl font-bold mb-4">Reset via PIN</h3>
+                    <h3 className="text-xl font-bold mb-4">Reset Kata Sandi via PIN</h3>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-1">Masukkan PIN Akun</label>
+                            <label className="block text-sm font-medium mb-1">Masukkan PIN Pemulihan Akun</label>
                             <input type="password" value={pinData.pin} onChange={e => setPinData({...pinData, pin: e.target.value})} className="w-full border p-2 rounded text-center text-2xl tracking-widest" maxLength={4} placeholder="0000" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Password Baru</label>
+                            <label className="block text-sm font-medium mb-1">Kata Sandi Baru</label>
                             <input type="password" value={pinData.newPass} onChange={e => setPinData({...pinData, newPass: e.target.value})} className="w-full border p-2 rounded" placeholder="Password baru" />
                         </div>
                         <div className="flex gap-2 mt-4">

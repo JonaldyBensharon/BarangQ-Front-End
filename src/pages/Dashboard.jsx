@@ -96,7 +96,7 @@ export default function Dashboard() {
                 ))
             ) : (
                 <div className="col-span-full text-center py-8 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <p>✅ Aman! Tidak ada produk dengan stok menipis(daftar akan ditampilkan jika ada barang dengan stok kurang dari 5).</p>
+                    <p>Aman! Tidak ada produk dengan stok menipis (daftar akan ditampilkan jika ada barang dengan stok kurang dari 5).</p>
                 </div>
             )}
         </div>
