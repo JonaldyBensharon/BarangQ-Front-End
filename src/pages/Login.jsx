@@ -41,6 +41,7 @@ export default function Login({onLogin}) {
         setRegisterData({ username: "", nama_toko: "", password: "" });
         setRecoveryData({ username: "", pin: "" });
         setResetData({ password: "" });
+        setConfirmPassword({ confirmPass: ""});
     };
 
     const switchPanel = (panel) => {
@@ -174,8 +175,6 @@ export default function Login({onLogin}) {
         if (!validateRegister()) return;
 
         try {
-            console.log("Register data:", registerData);
-
             const response = await api.post('/users/register', {
                 username: registerData.username,
                 password: registerData.password,
