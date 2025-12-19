@@ -175,7 +175,7 @@ export default function Sales() {
                                 <td className="p-4 font-medium">
                                     {formatRupiah(p.sell_price)}
                                 </td>
-                                <td className={`p-4 text-center font-bold ${p.stock <= 5 ? 'text-red-500' : 'text-green-600'}`}>
+                                <td className={`p-4 text-center font-bold ${p.stock < 5 ? 'text-red-500' : 'text-green-600'}`}>
                                     {p.stock}
                                 </td>
                                 <td className="p-4">
