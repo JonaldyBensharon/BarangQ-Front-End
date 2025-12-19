@@ -136,8 +136,8 @@ export default function Sales() {
 
     // Hitungan Summary Akhir
     const totalSummaryQty = summarySales?.items.reduce((a, b) => a + b.qty, 0) || 0;
-    const totalSummaryRevenue = summarySales?.items.reduce((a, b) => a + b.subtotal, 0) || 0;
-    const totalSummaryProfit = summarySales?.items.reduce((a, b) => a + b.profit, 0) || 0;
+    const totalSummaryRevenue = summarySales?.items.reduce((a, b) => a + Number(b.subtotal), 0) || 0;
+    const totalSummaryProfit = summarySales?.items.reduce((a, b) => a + Number(b.profit), 0) || 0;
 
     return (
         <div className="animate-fade-in pb-32"> 
@@ -312,28 +312,31 @@ export default function Sales() {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {summarySales.items.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-50">
-                          <td className="border p-3 font-medium">
-                            {item.product_name}
-                          </td>
-                          <td className="border p-3 text-right">
-                            {formatRupiah(item.sell_price)}
-                          </td>
-                          <td className="border p-3 text-center">
-                            {getCurrentStock(item.product_id)}
-                          </td>
-                          <td className="border p-3 text-center font-semibold">
-                            {item.qty}
-                          </td>
-                          <td className="border p-3 text-right">
-                            {formatRupiah(item.subtotal)}
-                          </td>
-                          <td className={`border p-3 text-right font-semibold ${item.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {item.profit > 0 ? '+' : ''} {formatRupiah(item.profit)}
-                          </td>
-                        </tr>
-                      ))}
+                      {summarySales.items.map((item) => {
+                        const profitVal = Number(item.profit); 
+                        return (
+                            <tr key={item.id} className="hover:bg-gray-50">
+                            <td className="border p-3 font-medium">
+                                {item.product_name}
+                            </td>
+                            <td className="border p-3 text-right">
+                                {formatRupiah(item.sell_price)}
+                            </td>
+                            <td className="border p-3 text-center">
+                                {getCurrentStock(item.product_id)}
+                            </td>
+                            <td className="border p-3 text-center font-semibold">
+                                {item.qty}
+                            </td>
+                            <td className="border p-3 text-right">
+                                {formatRupiah(item.subtotal)}
+                            </td>
+                            <td className={`border p-3 text-right font-semibold ${profitVal >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {profitVal > 0 ? '+' : ''} {formatRupiah(profitVal)}
+                            </td>
+                            </tr>
+                        );
+                      })}
 
                       <tr className="bg-blue-400 font-bold">
                         <td className="text-white p-3" colSpan={3}>

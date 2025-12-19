@@ -24,17 +24,20 @@ export default function Report() {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {data.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50">
-                <td className="p-4 text-gray-500 text-sm">{new Date(item.date).toLocaleString()}</td>
-                <td className="p-4 font-bold text-gray-800">{item.name}</td>
-                <td className="p-4 font-bold">{item.qty}</td>
-                <td className="p-4 text-blue-600 font-bold">{formatRupiah(item.total_price)}</td>
-                <td className={`p-4 font-bold ${item.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {item.profit > 0 ? '+' : ''} {formatRupiah(item.profit)}
-                </td>
-              </tr>
-            ))}
+            {data.map((item) => {
+                const profitVal = Number(item.profit); 
+                return (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                        <td className="p-4 text-gray-500 text-sm">{new Date(item.date).toLocaleString()}</td>
+                        <td className="p-4 font-bold text-gray-800">{item.name}</td>
+                        <td className="p-4 font-bold">{item.qty}</td>
+                        <td className="p-4 text-blue-600 font-bold">{formatRupiah(item.total_price)}</td>
+                        <td className={`p-4 font-bold ${profitVal >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {profitVal > 0 ? '+' : ''} {formatRupiah(profitVal)}
+                        </td>
+                    </tr>
+                );
+            })}
           </tbody>
         </table>
         {data.length === 0 && <p className="p-8 text-center text-gray-400">Belum ada transaksi</p>}
