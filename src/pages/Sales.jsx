@@ -329,8 +329,8 @@ export default function Sales() {
                           <td className="border p-3 text-right">
                             {formatRupiah(item.subtotal)}
                           </td>
-                          <td className="border p-3 text-right text-green-600 font-semibold">
-                            {formatRupiah(item.profit)}
+                          <td className={`border p-3 text-right font-semibold ${item.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {item.profit > 0 ? '+' : ''} {formatRupiah(item.profit)}
                           </td>
                         </tr>
                       ))}
@@ -345,8 +345,8 @@ export default function Sales() {
                         <td className="border p-3 text-right bg-blue-100">
                           {formatRupiah(totalSummaryRevenue)}
                         </td>
-                        <td className="border p-3 text-right bg-blue-100 text-green-700">
-                          {formatRupiah(totalSummaryProfit)}
+                        <td className={`border p-3 text-right bg-blue-100 ${totalSummaryProfit >= 0 ? 'text-green-700' : 'text-red-600'}`}>
+                          {totalSummaryProfit > 0 ? '+' : ''} {formatRupiah(totalSummaryProfit)}
                         </td>
                       </tr>
                     </tbody>
@@ -364,10 +364,10 @@ export default function Sales() {
                       {formatRupiah(totalSummaryRevenue)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-green-600">
+                  <div className={`flex justify-between ${totalSummaryProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     <span className='text-xl font-bold'>Total Keuntungan</span>
                     <span className="text-xl font-bold">
-                      {formatRupiah(totalSummaryProfit)}
+                      {totalSummaryProfit > 0 ? '+' : ''} {formatRupiah(totalSummaryProfit)}
                     </span>
                   </div>
                 </div>

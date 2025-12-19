@@ -30,7 +30,9 @@ export default function Report() {
                 <td className="p-4 font-bold text-gray-800">{item.name}</td>
                 <td className="p-4 font-bold">{item.qty}</td>
                 <td className="p-4 text-blue-600 font-bold">{formatRupiah(item.total_price)}</td>
-                <td className="p-4 text-green-600 font-bold">+ {formatRupiah(item.profit)}</td>
+                <td className={`p-4 font-bold ${item.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {item.profit > 0 ? '+' : ''} {formatRupiah(item.profit)}
+                </td>
               </tr>
             ))}
           </tbody>
