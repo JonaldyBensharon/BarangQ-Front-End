@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Search, ShoppingCart, Check, ChevronUp, ChevronDown, X } from 'lucide-react';
 import api from '../components/api';
+import { formatRupiah } from '../utils/formatter';
 
 export default function Sales() {
     const [products, setProducts] = useState([]);
@@ -172,7 +173,7 @@ export default function Sales() {
                                     <div className="text-xs text-gray-500">{p.code || '-'}</div>
                                 </td>
                                 <td className="p-4 font-medium">
-                                    Rp {parseInt(p.sell_price).toLocaleString()}
+                                    {formatRupiah(p.sell_price)}
                                 </td>
                                 <td className={`p-4 text-center font-bold ${p.stock <= 5 ? 'text-red-500' : 'text-green-600'}`}>
                                     {p.stock}
@@ -226,12 +227,12 @@ export default function Sales() {
                         <div className="flex items-center space-x-6">
                             <div className="text-right">
                                 <p className="text-xs text-gray-400">Total Sementara</p>
-                                <p className="text-xl font-bold text-green-400">Rp {totalRevenue.toLocaleString()}</p>
+                                <p className="text-xl font-bold text-green-400">{formatRupiah(totalRevenue)}</p>
                             </div>
                             {panelOpen ? <ChevronDown /> : <ChevronUp />}
                         </div>
                     </div>
-=
+
                     <div className="p-6 max-h-[60vh] overflow-y-auto bg-gray-50">
                         <table className="w-full bg-white rounded-lg shadow-sm overflow-hidden">
                             <thead className="bg-gray-100 border-b text-left text-sm font-bold text-gray-600">
@@ -248,7 +249,7 @@ export default function Sales() {
                                 {pendingSales.map((item) => (
                                     <tr key={item.id}>
                                         <td className="p-3 font-medium">{item.name}</td>
-                                        <td className="p-3">Rp {item.sell_price.toLocaleString()}</td>
+                                        <td className="p-3">{formatRupiah(item.sell_price)}</td>
                                         <td className="p-3">{item.stock - item.qty}</td>
                                         <td className="p-3">
                                             <input 
@@ -260,7 +261,7 @@ export default function Sales() {
                                                 onChange={(e) => updateQtyInCart(item.id, Math.min(Number(e.target.value) || 0, item.stock))}
                                             />
                                         </td>
-                                        <td className="p-3 font-bold">Rp {item.subtotal.toLocaleString()}</td>
+                                        <td className="p-3 font-bold">{formatRupiah(item.subtotal)}</td>
                                         <td className="p-3 text-center">
                                             <button 
                                                 onClick={() => updateQtyInCart(item.id, 0)}
@@ -317,7 +318,7 @@ export default function Sales() {
                             {item.product_name}
                           </td>
                           <td className="border p-3 text-right">
-                            Rp {item.sell_price.toLocaleString()}
+                            {formatRupiah(item.sell_price)}
                           </td>
                           <td className="border p-3 text-center">
                             {getCurrentStock(item.product_id)}
@@ -326,10 +327,10 @@ export default function Sales() {
                             {item.qty}
                           </td>
                           <td className="border p-3 text-right">
-                            Rp {item.subtotal.toLocaleString()}
+                            {formatRupiah(item.subtotal)}
                           </td>
                           <td className="border p-3 text-right text-green-600 font-semibold">
-                            Rp {item.profit.toLocaleString()}
+                            {formatRupiah(item.profit)}
                           </td>
                         </tr>
                       ))}
@@ -342,10 +343,10 @@ export default function Sales() {
                           {totalSummaryQty}
                         </td>
                         <td className="border p-3 text-right bg-blue-100">
-                          Rp {totalSummaryRevenue.toLocaleString()}
+                          {formatRupiah(totalSummaryRevenue)}
                         </td>
                         <td className="border p-3 text-right bg-blue-100 text-green-700">
-                          Rp {totalSummaryProfit.toLocaleString()}
+                          {formatRupiah(totalSummaryProfit)}
                         </td>
                       </tr>
                     </tbody>
@@ -360,13 +361,13 @@ export default function Sales() {
                   <div className="flex justify-between">
                     <span className='text-xl font-bold'>Total Pendapatan</span>
                     <span className="text-xl font-bold">
-                      Rp {totalSummaryRevenue.toLocaleString()}
+                      {formatRupiah(totalSummaryRevenue)}
                     </span>
                   </div>
                   <div className="flex justify-between text-green-600">
                     <span className='text-xl font-bold'>Total Keuntungan</span>
                     <span className="text-xl font-bold">
-                      Rp {totalSummaryProfit.toLocaleString()}
+                      {formatRupiah(totalSummaryProfit)}
                     </span>
                   </div>
                 </div>

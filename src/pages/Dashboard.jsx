@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { DollarSign, Package, ShoppingBag, MapPin } from 'lucide-react';
 import api from '../components/api';
+import { formatRupiah } from '../utils/formatter';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ income: 0, products: 0, sales: 0, lowStock: [] });
@@ -58,7 +59,7 @@ export default function Dashboard() {
             <div>
                 <p className="text-gray-500 text-sm font-medium uppercase">Pendapatan</p>
                 <h3 className="text-2xl font-bold text-gray-800">
-                    Rp {parseInt(stats.income || 0).toLocaleString('id-ID')}
+                    {formatRupiah(stats.income || 0)}
                 </h3>
             </div>
             <div className="bg-blue-100 text-blue-600 p-3 rounded-full shadow-sm"><DollarSign size={24}/></div>

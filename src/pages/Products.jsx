@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from '../components/api';
+import { formatRupiah } from '../utils/formatter';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -135,8 +136,8 @@ export default function Products() {
                             <div className="text-xs text-gray-500">{item.code || '-'}</div>
                         </td>
                         <td className="p-4 text-gray-600">{item.brand || '-'}</td>
-                        <td className="p-4 font-medium">Rp {parseInt(item.buy_price).toLocaleString()}</td>
-                        <td className="p-4 font-medium">Rp {parseInt(item.sell_price).toLocaleString()}</td>
+                        <td className="p-4 font-medium">{formatRupiah(item.buy_price)}</td>
+                        <td className="p-4 font-medium">{formatRupiah(item.sell_price)}</td>
                         <td className={`p-4 font-bold ${item.stock < 5 ? 'text-red-600' : 'text-green-600'}`}>{item.stock}</td>
                         <td className="p-4 flex justify-center space-x-2">
                             <button onClick={() => openEditModal(item)} className="bg-green-100 text-green-700 p-2 rounded hover:bg-green-200"><Edit size={16}/></button>

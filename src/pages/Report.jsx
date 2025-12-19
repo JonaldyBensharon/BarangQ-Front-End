@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../components/api';
+import { formatRupiah } from '../utils/formatter';
 
 export default function Report() {
   const [data, setData] = useState([]);
@@ -28,8 +29,8 @@ export default function Report() {
                 <td className="p-4 text-gray-500 text-sm">{new Date(item.date).toLocaleString()}</td>
                 <td className="p-4 font-bold text-gray-800">{item.name}</td>
                 <td className="p-4 font-bold">{item.qty}</td>
-                <td className="p-4 text-blue-600 font-bold">Rp {parseInt(item.total_price).toLocaleString()}</td>
-                <td className="p-4 text-green-600 font-bold">+ Rp {parseInt(item.profit).toLocaleString()}</td>
+                <td className="p-4 text-blue-600 font-bold">{formatRupiah(item.total_price)}</td>
+                <td className="p-4 text-green-600 font-bold">+ {formatRupiah(item.profit)}</td>
               </tr>
             ))}
           </tbody>
