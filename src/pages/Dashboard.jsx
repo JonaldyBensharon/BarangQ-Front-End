@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/immutability */
 import { useEffect, useState } from 'react';
-import { DollarSign, Package, ShoppingBag, MapPin } from 'lucide-react';
+import { DollarSign, Package, ShoppingBag, MapPin, TrendingUp } from 'lucide-react';
 import api from '../components/api';
 import { formatRupiah } from '../utils/formatter';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ income: 0, products: 0, sales: 0, lowStock: [] });
+  const [totalProfit, setTotalProfit] = useState(0);
   const [store, setStore] = useState({});
   
   const API_URL = 'https://barangq-back-end-production.up.railway.app';
@@ -21,6 +22,10 @@ export default function Dashboard() {
 
         const resStore = await api.get('/settings');
         setStore(resStore.data);
+
+        const resReports = await api.get('/reports');
+        const calculatedProfit = resReports.data.reduce((acc, curr) => acc + Number(curr.profit), 0);
+        setTotalProfit(calculatedProfit);
         
     } catch (err) {
         console.error("Gagal memuat dashboard:", err);
@@ -29,7 +34,6 @@ export default function Dashboard() {
 
   return (
     <div className="animate-fade-in">
-      {/* Profil Toko */}
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 text-white mb-8 shadow-xl flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
         <img 
             src={
@@ -53,34 +57,46 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Statistik */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
             <div>
-                <p className="text-gray-500 text-sm font-medium uppercase">Pendapatan</p>
-                <h3 className="text-2xl font-bold text-gray-800">
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Pendapatan Kotor</p>
+                <h3 className="text-xl font-bold text-gray-800 mt-1">
                     {formatRupiah(stats.income || 0)}
                 </h3>
             </div>
             <div className="bg-blue-100 text-blue-600 p-3 rounded-full shadow-sm"><DollarSign size={24}/></div>
         </div>
+
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
             <div>
-                <p className="text-gray-500 text-sm font-medium uppercase">Jumlah Produk</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.products || 0}</h3>
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Keuntungan Bersih</p>
+                <h3 className={`text-xl font-bold mt-1 ${totalProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                   {totalProfit > 0 ? '+' : ''} {formatRupiah(totalProfit)}
+                </h3>
+            </div>
+            <div className={`p-3 rounded-full shadow-sm ${totalProfit >= 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                <TrendingUp size={24}/>
+            </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
+            <div>
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Produk</p>
+                <h3 className="text-xl font-bold text-gray-800 mt-1">{stats.products || 0} Item</h3>
             </div>
             <div className="bg-orange-100 text-orange-600 p-3 rounded-full shadow-sm"><Package size={24}/></div>
         </div>
+
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
             <div>
-                <p className="text-gray-500 text-sm font-medium uppercase">Transaksi</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.sales || 0} x</h3>
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Transaksi</p>
+                <h3 className="text-xl font-bold text-gray-800 mt-1">{stats.sales || 0} Kali</h3>
             </div>
-            <div className="bg-green-100 text-green-600 p-3 rounded-full shadow-sm"><ShoppingBag size={24}/></div>
+            <div className="bg-purple-100 text-purple-600 p-3 rounded-full shadow-sm"><ShoppingBag size={24}/></div>
         </div>
       </div>
 
-      {/* Stok Rendah */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border">
         <h3 className="font-bold text-lg mb-4 text-gray-600 flex items-center">
             Barang dengan Stok Sedikit
@@ -97,7 +113,7 @@ export default function Dashboard() {
                 ))
             ) : (
                 <div className="col-span-full text-center py-8 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <p>Stok barang masih mencukup. Tidak ada barang dengan stok yang menipis.</p>
+                    <p>Tidak ada barang dengan stok yang menipis.</p>
                 </div>
             )}
         </div>
