@@ -11,7 +11,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile'); 
   
-  const API_URL = 'http://localhost:5001';
+  const API_URL = 'https://barangq-back-end-production.up.railway.app';
 
   const [selectedFile, setSelectedFile] = useState(null); 
   const [isImageDeleted, setIsImageDeleted] = useState(false);

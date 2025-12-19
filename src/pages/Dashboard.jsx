@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ income: 0, products: 0, sales: 0, lowStock: [] });
   const [store, setStore] = useState({});
   
-  const API_URL = 'http://localhost:5001';
+  const API_URL = 'https://barangq-back-end-production.up.railway.app';
 
   useEffect(() => {
     fetchData();
@@ -81,8 +81,8 @@ export default function Dashboard() {
 
       {/* Stok Rendah */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border">
-        <h3 className="font-bold text-lg mb-4 text-red-600 flex items-center">
-            ⚠️ Peringatan Stok Menipis
+        <h3 className="font-bold text-lg mb-4 text-gray-600 flex items-center">
+            Barang dengan Stok Sedikit
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {stats.lowStock && stats.lowStock.length > 0 ? (
@@ -95,8 +95,8 @@ export default function Dashboard() {
                     </div>
                 ))
             ) : (
-                <div className="col-span-full text-center py-8 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <p>Aman! Tidak ada produk dengan stok menipis (daftar akan ditampilkan jika ada barang dengan stok kurang dari 5).</p>
+                <div className="col-span-full text-center py-8 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <p>Stok barang masih mencukup. Tidak ada barang dengan stok yang menipis.</p>
                 </div>
             )}
         </div>
