@@ -12,7 +12,7 @@ export default function Products() {
   const [isEdit, setIsEdit] = useState(false); 
   
   // URL Backend untuk akses gambar upload
-  const API_URL = 'http://localhost:5001';
+  const API_URL = 'https://barangq-back-end-production.up.railway.app';
 
   // State Form
   const [form, setForm] = useState({
