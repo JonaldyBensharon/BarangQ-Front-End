@@ -65,14 +65,14 @@ export default function Dashboard() {
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
             <div>
-                <p className="text-gray-500 text-sm font-medium uppercase">Total Produk</p>
+                <p className="text-gray-500 text-sm font-medium uppercase">Jumlah Produk</p>
                 <h3 className="text-2xl font-bold text-gray-800">{stats.products || 0}</h3>
             </div>
             <div className="bg-orange-100 text-orange-600 p-3 rounded-full shadow-sm"><Package size={24}/></div>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
             <div>
-                <p className="text-gray-500 text-sm font-medium uppercase">Terjual</p>
+                <p className="text-gray-500 text-sm font-medium uppercase">Transaksi</p>
                 <h3 className="text-2xl font-bold text-gray-800">{stats.sales || 0} x</h3>
             </div>
             <div className="bg-green-100 text-green-600 p-3 rounded-full shadow-sm"><ShoppingBag size={24}/></div>
