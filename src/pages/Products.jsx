@@ -43,6 +43,13 @@ export default function Products() {
     setShowModal(true);
   };
 
+  // Fungsi khusus untuk menangani input harga agar ada format ribuan (titik)
+  const handlePriceChange = (e, field) => {
+    // Hapus karakter selain angka (menghapus titik saat user mengetik/menghapus)
+    const rawValue = e.target.value.replace(/\D/g, '');
+    setForm({ ...form, [field]: rawValue });
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -185,13 +192,23 @@ export default function Products() {
                     
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-gray-500">Harga Beli</label>
-                        <input type="number" required className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
-                            value={form.buy_price} onChange={e => setForm({...form, buy_price: e.target.value})} />
+                        <input 
+                            type="text" 
+                            required 
+                            className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.buy_price ? parseInt(form.buy_price).toLocaleString('id-ID') : ''} 
+                            onChange={e => handlePriceChange(e, 'buy_price')} 
+                        />
                     </div>
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-gray-500">Harga Jual</label>
-                        <input type="number" required className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
-                            value={form.sell_price} onChange={e => setForm({...form, sell_price: e.target.value})} />
+                        <input 
+                            type="text" 
+                            required 
+                            className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
+                            value={form.sell_price ? parseInt(form.sell_price).toLocaleString('id-ID') : ''} 
+                            onChange={e => handlePriceChange(e, 'sell_price')} 
+                        />
                     </div>
                     
                     <div className="space-y-1">
