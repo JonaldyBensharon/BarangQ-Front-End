@@ -1,10 +1,33 @@
 /* eslint-disable react-hooks/immutability */
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
-import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, Package } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from '../components/api';
 import { formatRupiah } from '../utils/formatter';
+
+const ProductImage = ({ url, apiUrl }) => {
+    const [error, setError] = useState(false);
+    
+    if (!url || error) {
+        return (
+            <div className="w-12 h-12 bg-gray-100 rounded border flex items-center justify-center text-gray-400">
+                <Package size={20} />
+            </div>
+        );
+    }
+
+    const src = url.startsWith('http') ? url : `${apiUrl}${url}`;
+
+    return (
+        <img 
+            src={src} 
+            alt="Produk" 
+            className="w-12 h-12 object-cover rounded border bg-white"
+            onError={() => setError(true)}
+        />
+    );
+};
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -12,10 +35,8 @@ export default function Products() {
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false); 
   
-  // URL Backend untuk akses gambar upload
   const API_URL = 'https://barangq-back-end-production.up.railway.app';
 
-  // State Form
   const [form, setForm] = useState({
     id: '', code: '', name: '', brand: '', description: '', image_url: '', buy_price: '', sell_price: '', stock: ''
   });
@@ -43,9 +64,7 @@ export default function Products() {
     setShowModal(true);
   };
 
-  // Fungsi khusus untuk menangani input harga agar ada format ribuan (titik)
   const handlePriceChange = (e, field) => {
-    // Hapus karakter selain angka (menghapus titik saat user mengetik/menghapus)
     const rawValue = e.target.value.replace(/\D/g, '');
     setForm({ ...form, [field]: rawValue });
   };
@@ -112,40 +131,31 @@ export default function Products() {
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
         <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-gray-50 border-b text-gray-600 text-sm font-bold tracking-wider">
                 <tr>
                     <th className="p-4">Foto</th>
                     <th className="p-4">Kode/Nama</th>
                     <th className="p-4">Merk</th>
-                    <th className='p-4'>Harga Beli</th>
-                    <th className="p-4">Harga Jual</th>
-                    <th className="p-4">Stok</th>
+                    <th className='p-4 text-right'>Harga Beli</th>
+                    <th className="p-4 text-right">Harga Jual</th>
+                    <th className="p-4 text-center">Stok</th>
                     <th className="p-4 text-center">Edit</th>
                 </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-gray-100">
                 {filtered.map((item) => (
-                    <tr key={item.id} className="hover:bg-blue-50">
+                    <tr key={item.id} className="hover:bg-blue-50 transition">
                         <td className="p-4">
-                            <img 
-                                src={
-                                    item.image_url 
-                                        ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`)
-                                        : "https://placehold.co/50" 
-                                } 
-                                alt="Gambar Barang" 
-                                className="w-12 h-12 object-cover rounded bg-gray-200 border"
-                                onError={(e) => {e.target.src = "https://placehold.co/50?text=No+Img"}}
-                            />
+                            <ProductImage url={item.image_url} apiUrl={API_URL} />
                         </td>
                         <td className="p-4">
                             <div className="font-bold text-gray-800">{item.name}</div>
                             <div className="text-xs text-gray-500">{item.code || '-'}</div>
                         </td>
                         <td className="p-4 text-gray-600">{item.brand || '-'}</td>
-                        <td className="p-4 font-medium">{formatRupiah(item.buy_price)}</td>
-                        <td className="p-4 font-medium">{formatRupiah(item.sell_price)}</td>
-                        <td className={`p-4 font-bold ${item.stock < 5 ? 'text-red-600' : 'text-green-600'}`}>{item.stock}</td>
+                        <td className="p-4 font-medium text-right">{formatRupiah(item.buy_price)}</td>
+                        <td className="p-4 font-medium text-right">{formatRupiah(item.sell_price)}</td>
+                        <td className={`p-4 font-bold text-center ${item.stock < 5 ? 'text-red-600' : 'text-green-600'}`}>{item.stock}</td>
                         <td className="p-4 flex justify-center space-x-2">
                             <button onClick={() => openEditModal(item)} className="bg-green-100 text-green-700 p-2 rounded hover:bg-green-200"><Edit size={16}/></button>
                             <button onClick={() => handleDelete(item.id)} className="bg-red-100 text-red-700 p-2 rounded hover:bg-red-200"><Trash2 size={16}/></button>

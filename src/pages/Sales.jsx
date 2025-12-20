@@ -155,10 +155,11 @@ export default function Sales() {
 
             <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
                 <table className="w-full text-left">
+                    {/* Header Tabel Utama */}
                     <thead className="bg-gray-50 border-b text-gray-600 text-sm font-bold tracking-wider">
                         <tr>
                             <th className="p-4">Produk</th>
-                            <th className="p-4">Harga Jual</th>
+                            <th className="p-4 text-right">Harga Jual</th>
                             <th className="p-4 text-center">Sisa Stok</th>
                             <th className="p-4 text-center w-48">Input Jumlah</th>
                         </tr>
@@ -170,7 +171,7 @@ export default function Sales() {
                                     <div className="font-bold text-gray-800">{p.name}</div>
                                     <div className="text-xs text-gray-500">{p.code || '-'}</div>
                                 </td>
-                                <td className="p-4 font-medium">
+                                <td className="p-4 font-medium text-right">
                                     {formatRupiah(p.sell_price)}
                                 </td>
                                 <td className={`p-4 text-center font-bold ${p.stock < 5 ? 'text-red-500' : 'text-green-600'}`}>
@@ -211,6 +212,7 @@ export default function Sales() {
                 )}
             </div>
 
+            {/* Keranjang Belanja (Drawer Bawah) */}
             {pendingSales.length > 0 && !summarySales && (
                 <div className={`sticky bottom-0 left-0 w-full bg-white shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] transition-transform duration-300 z-40 border-t ${panelOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'}`}>
                     
@@ -236,10 +238,12 @@ export default function Sales() {
                             <thead className="bg-gray-100 border-b text-left text-sm font-bold text-gray-600">
                                 <tr>
                                     <th className="p-3">Nama Barang</th>
-                                    <th className="p-3">Harga Jual</th>
-                                    <th className="p-3">Sisa Stok</th>
-                                    <th className="p-3">Jumlah Terjual</th>
-                                    <th className="p-3">Subtotal</th>
+                                    {/* ALIGNMENT FIX: Harga Rata Kanan */}
+                                    <th className="p-3 text-right">Harga Jual</th>
+                                    <th className="p-3 text-center">Sisa Stok</th>
+                                    <th className="p-3 text-center">Jumlah Terjual</th>
+                                    {/* ALIGNMENT FIX: Subtotal Rata Kanan */}
+                                    <th className="p-3 text-right">Subtotal</th>
                                     <th className="p-3 text-center">Hapus</th>
                                 </tr>
                             </thead>
@@ -247,9 +251,9 @@ export default function Sales() {
                                 {pendingSales.map((item) => (
                                     <tr key={item.id}>
                                         <td className="p-3 font-medium">{item.name}</td>
-                                        <td className="p-3">{formatRupiah(item.sell_price)}</td>
-                                        <td className="p-3">{item.stock - item.qty}</td>
-                                        <td className="p-3">
+                                        <td className="p-3 text-right">{formatRupiah(item.sell_price)}</td>
+                                        <td className="p-3 text-center">{item.stock - item.qty}</td>
+                                        <td className="p-3 text-center">
                                             <input 
                                                 type="number" 
                                                 className="w-16 border rounded p-1 text-center"
@@ -259,7 +263,7 @@ export default function Sales() {
                                                 onChange={(e) => updateQtyInCart(item.id, Math.min(Number(e.target.value) || 0, item.stock))}
                                             />
                                         </td>
-                                        <td className="p-3 font-bold">{formatRupiah(item.subtotal)}</td>
+                                        <td className="p-3 font-bold text-right">{formatRupiah(item.subtotal)}</td>
                                         <td className="p-3 text-center">
                                             <button 
                                                 onClick={() => updateQtyInCart(item.id, 0)}
@@ -285,6 +289,7 @@ export default function Sales() {
                 </div>
             )}
 
+            {/* Modal Ringkasan Transaksi */}
             {summarySales && (
               <div className='fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm overflow-auto'>
                   <div className='bg-white w-full max-w-5xl mt-16 mb-10 rounded-2xl shadow-xl border p-6'>

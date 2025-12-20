@@ -14,28 +14,25 @@ export default function Report() {
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Laporan Riwayat Transaksi</h2>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
         <table className="w-full text-left">
-          {/* REVISI DESAIN: Menyamakan style header dengan halaman Sales/Produk */}
           <thead className="bg-gray-50 border-b text-gray-600 text-sm font-bold tracking-wider">
             <tr>
               <th className="p-4">Tanggal</th>
               <th className="p-4">Nama Barang</th>
-              {/* REVISI BAHASA */}
-              <th className="p-4">Jumlah</th>
-              <th className="p-4">Total Harga</th>
-              <th className="p-4">Keuntungan</th>
+              <th className="p-4 text-center">Jumlah</th>
+              <th className="p-4 text-right">Total Harga</th>
+              <th className="p-4 text-right">Keuntungan</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {data.map((item) => {
                 const profitVal = Number(item.profit); 
                 return (
-                    // REVISI DESAIN: Menyamakan efek hover (biru muda)
                     <tr key={item.id} className="hover:bg-blue-50 transition">
                         <td className="p-4 text-gray-500 text-sm">{new Date(item.date).toLocaleString()}</td>
                         <td className="p-4 font-bold text-gray-800">{item.name}</td>
-                        <td className="p-4 font-bold">{item.qty}</td>
-                        <td className="p-4 text-blue-600 font-bold">{formatRupiah(item.total_price)}</td>
-                        <td className={`p-4 font-bold ${profitVal >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <td className="p-4 font-bold text-center">{item.qty}</td>
+                        <td className="p-4 text-blue-600 font-bold text-right">{formatRupiah(item.total_price)}</td>
+                        <td className={`p-4 font-bold text-right ${profitVal >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                             {profitVal < 0 ? '- ' : (profitVal > 0 ? '+ ' : '')}{formatRupiah(Math.abs(profitVal))}
                         </td>
                     </tr>
