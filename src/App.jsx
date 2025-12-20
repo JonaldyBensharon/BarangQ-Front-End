@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu, LogOut } from 'lucide-react';
+import Swal from 'sweetalert2'; 
+
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
@@ -18,6 +20,35 @@ import api from './components/api';
 const Layout = ({ children, onLogout }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
+  const handleLogoutConfirm = () => {
+    Swal.fire({
+      title: 'Konfirmasi Keluar',
+      text: "Apakah Anda yakin ingin mengakhiri sesi?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        onLogout();
+        
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+        Toast.fire({
+            icon: 'success',
+            title: 'Berhasil keluar'
+        });
+      }
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100 font-sans">
       <Sidebar isOpen={isSidebarOpen} />
@@ -28,7 +59,11 @@ const Layout = ({ children, onLogout }) => {
             <Menu size={24} />
           </button>
           <h1 className="font-bold text-lg hidden md:block">BarangQ</h1>
-          <button onClick={onLogout} className="flex items-center bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded text-sm font-medium transition">
+          
+          <button 
+            onClick={handleLogoutConfirm} 
+            className="flex items-center bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded text-sm font-medium transition"
+          >
             <LogOut size={16} className="mr-2" /> Keluar
           </button>
         </header>

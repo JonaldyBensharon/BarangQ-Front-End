@@ -34,19 +34,21 @@ export default function Dashboard() {
 
   return (
     <div className="animate-fade-in">
+      {/* Header Toko */}
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 text-white mb-8 shadow-xl flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
         <img 
             src={
                 store.store_image 
                     ? (store.store_image.startsWith('/uploads') ? `${API_URL}${store.store_image}` : store.store_image)
-                    : "https://ui-avatars.com/api/?name=Error&background=red"
+                    : "https://ui-avatars.com/api/?name=Admin+Toko&background=random" 
             } 
             alt="Logo Toko"
             className="w-24 h-24 rounded-full border-4 border-gray-600 mb-4 md:mb-0 md:mr-6 object-cover bg-white"
             onError={(e) => {e.target.src = "https://ui-avatars.com/api/?name=Error&background=red"}}
         />
         <div>
-            <h1 className="text-3xl font-bold">{store.store_name || "Nama Toko Belum Diatur"}</h1>
+            {/* Menggunakan fallback nama yang lebih profesional */}
+            <h1 className="text-3xl font-bold">{store.store_name || "Toko Saya"}</h1>
             <p className="text-gray-300 mt-1 max-w-xl text-sm md:text-base">
                 {store.store_description || "Silakan atur deskripsi toko Anda di menu Pengaturan."}
             </p>
@@ -57,6 +59,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Kartu Statistik */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
             <div>
@@ -83,7 +86,8 @@ export default function Dashboard() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition">
             <div>
                 <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Produk</p>
-                <h3 className="text-xl font-bold text-gray-800 mt-1">{stats.products || 0} Item</h3>
+                {/* REVISI: Ganti 'Item' jadi 'Barang' */}
+                <h3 className="text-xl font-bold text-gray-800 mt-1">{stats.products || 0} Barang</h3>
             </div>
             <div className="bg-orange-100 text-orange-600 p-3 rounded-full shadow-sm"><Package size={24}/></div>
         </div>
@@ -97,6 +101,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Stok Sedikit */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border">
         <h3 className="font-bold text-lg mb-4 text-gray-600 flex items-center">
             Barang dengan Stok Sedikit
