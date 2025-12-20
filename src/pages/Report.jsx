@@ -11,23 +11,26 @@ export default function Report() {
 
   return (
     <div className="animate-fade-in">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Laporan Riwayat Transaksi</h1>
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Laporan Riwayat Transaksi</h2>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
         <table className="w-full text-left">
-          <thead className="bg-gray-800 text-white">
+          {/* REVISI DESAIN: Menyamakan style header dengan halaman Sales/Produk */}
+          <thead className="bg-gray-50 border-b text-gray-600 text-sm font-bold tracking-wider">
             <tr>
               <th className="p-4">Tanggal</th>
               <th className="p-4">Nama Barang</th>
-              <th className="p-4">Qty</th>
-              <th className="p-4">Total Masuk</th>
+              {/* REVISI BAHASA */}
+              <th className="p-4">Jumlah</th>
+              <th className="p-4">Total Harga</th>
               <th className="p-4">Keuntungan</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-gray-100">
             {data.map((item) => {
                 const profitVal = Number(item.profit); 
                 return (
-                    <tr key={item.id} className="hover:bg-gray-50">
+                    // REVISI DESAIN: Menyamakan efek hover (biru muda)
+                    <tr key={item.id} className="hover:bg-blue-50 transition">
                         <td className="p-4 text-gray-500 text-sm">{new Date(item.date).toLocaleString()}</td>
                         <td className="p-4 font-bold text-gray-800">{item.name}</td>
                         <td className="p-4 font-bold">{item.qty}</td>

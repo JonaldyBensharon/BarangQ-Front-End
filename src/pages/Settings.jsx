@@ -262,7 +262,7 @@ export default function Settings() {
                 <div className="w-full lg:w-2/3 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                     <form onSubmit={handleSaveProfile} className="grid gap-5">
                         <div>
-                            <label className="block text-gray-700 font-medium mb-1">Username</label>
+                            <label className="block text-gray-700 font-medium mb-1">Nama Pengguna</label>
                             <input type="text" value={form.username} disabled className="w-full border bg-gray-100 p-3 rounded-lg text-gray-500 cursor-not-allowed" />
                         </div>
                         <div>

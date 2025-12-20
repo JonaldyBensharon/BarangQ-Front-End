@@ -131,10 +131,8 @@ export default function Sales() {
       return product ? product.stock : '-';
     };
 
-    // Hitungan Summary Drawer
     const totalRevenue = pendingSales.reduce((a, b) => a + b.subtotal, 0);
 
-    // Hitungan Summary Akhir
     const totalSummaryQty = summarySales?.items.reduce((a, b) => a + b.qty, 0) || 0;
     const totalSummaryRevenue = summarySales?.items.reduce((a, b) => a + Number(b.subtotal), 0) || 0;
     const totalSummaryProfit = summarySales?.items.reduce((a, b) => a + Number(b.profit), 0) || 0;
@@ -157,7 +155,7 @@ export default function Sales() {
 
             <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-50 border-b text-gray-600 text-sm uppercase tracking-wider">
+                    <thead className="bg-gray-50 border-b text-gray-600 text-sm font-bold tracking-wider">
                         <tr>
                             <th className="p-4">Produk</th>
                             <th className="p-4">Harga Jual</th>
