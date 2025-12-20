@@ -136,8 +136,8 @@ export default function Products() {
                     <th className="p-4">Foto</th>
                     <th className="p-4">Kode/Nama</th>
                     <th className="p-4">Merk</th>
-                    <th className='p-4 text-right'>Harga Beli</th>
-                    <th className="p-4 text-right">Harga Jual</th>
+                    <th className='p-4 text-right pr-12'>Harga Beli</th>
+                    <th className="p-4 text-right pr-12">Harga Jual</th>
                     <th className="p-4 text-center">Stok</th>
                     <th className="p-4 text-center">Edit</th>
                 </tr>
@@ -153,8 +153,8 @@ export default function Products() {
                             <div className="text-xs text-gray-500">{item.code || '-'}</div>
                         </td>
                         <td className="p-4 text-gray-600">{item.brand || '-'}</td>
-                        <td className="p-4 font-medium text-right">{formatRupiah(item.buy_price)}</td>
-                        <td className="p-4 font-medium text-right">{formatRupiah(item.sell_price)}</td>
+                        <td className="p-4 font-medium text-right pr-12">{formatRupiah(item.buy_price)}</td>
+                        <td className="p-4 font-medium text-right pr-12">{formatRupiah(item.sell_price)}</td>
                         <td className={`p-4 font-bold text-center ${item.stock < 5 ? 'text-red-600' : 'text-green-600'}`}>{item.stock}</td>
                         <td className="p-4 flex justify-center space-x-2">
                             <button onClick={() => openEditModal(item)} className="bg-green-100 text-green-700 p-2 rounded hover:bg-green-200"><Edit size={16}/></button>
