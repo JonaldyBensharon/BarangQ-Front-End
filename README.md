@@ -9,6 +9,6 @@ npm install
 npm run dev
 
 
-# Link deployment Website yang telah terintegrasi antara Front-End, Back-End, dan database
+# Link deployment Website yang telah terintegrasi antara Front-End, Back-End, dan Database
 
 https://barangq.vercel.app/
