@@ -95,7 +95,9 @@ export default function Settings() {
             formData.append('store_image', form.store_image || '');
         }
 
-        const res = await api.put('/settings', formData);
+        const res = await api.put('/settings', formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
 
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         const updatedUser = { ...currentUser, ...res.data.user };
