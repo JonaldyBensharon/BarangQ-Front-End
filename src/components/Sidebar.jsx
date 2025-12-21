@@ -9,7 +9,7 @@ export default function Sidebar({ isOpen }) {
     { name: 'Beranda', path: '/', icon: <LayoutDashboard size={20}/> },
     { name: 'Daftar Barang', path: '/products', icon: <Package size={20}/> },
     { name: 'Tambah Stok', path: '/add-stock', icon: <Archive size={20}/> }, 
-    { name: 'Catatan Penjualan', path: '/sales', icon: <ShoppingCart size={20}/> },
+    { name: 'Kasir', path: '/sales', icon: <ShoppingCart size={20}/> },
     { name: 'Laporan', path: '/report', icon: <TrendingUp size={20}/> },
     { name: 'Pengaturan', path: '/settings', icon: <Settings size={20}/> },
   ];

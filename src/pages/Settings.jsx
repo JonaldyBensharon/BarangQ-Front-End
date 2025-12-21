@@ -186,6 +186,8 @@ export default function Settings() {
     }
   };
 
+  const displayName = form.store_name || form.username || 'Toko';
+
   if (loading) return <div className="p-10 text-center">Memuat...</div>;
 
   return (
@@ -217,11 +219,13 @@ export default function Settings() {
                             src={
                                 form.store_image 
                                     ? (form.store_image.startsWith('/uploads') ? `${API_URL}${form.store_image}` : form.store_image)
-                                    : "https://ui-avatars.com/api/?name=Error&background=red"
+                                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`
                             } 
                             alt="Logo Toko" 
                             className="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-blue-50"
-                            onError={(e) => {e.target.src = "https://ui-avatars.com/api/?name=Error&background=red"}}
+                            onError={(e) => {
+                                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`
+                            }}
                         />
                         <h3 className="font-bold text-xl">{form.store_name || "Nama Toko"}</h3>
                         <p className="text-gray-500 text-sm">@{form.username}</p>
@@ -258,7 +262,7 @@ export default function Settings() {
                 <div className="w-full lg:w-2/3 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                     <form onSubmit={handleSaveProfile} className="grid gap-5">
                         <div>
-                            <label className="block text-gray-700 font-medium mb-1">Username</label>
+                            <label className="block text-gray-700 font-medium mb-1">Nama Pengguna</label>
                             <input type="text" value={form.username} disabled className="w-full border bg-gray-100 p-3 rounded-lg text-gray-500 cursor-not-allowed" />
                         </div>
                         <div>
