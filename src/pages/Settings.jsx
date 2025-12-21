@@ -129,7 +129,7 @@ export default function Settings() {
       Swal.fire('Sukses', 'Kata sandi berhasil diganti', 'success');
       setPassForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      Swal.fire('Gagal', err.response?.data?.error || 'Password lama salah', 'error');
+      Swal.fire('Gagal', err.response?.data?.error || 'Kata sandi lama salah', 'error');
     }
   };
 
@@ -210,7 +210,6 @@ export default function Settings() {
         </div>
         
         <div className="flex flex-col lg:flex-row gap-8">
-            {/* TAB 1: PROFIL TOKO */}
             {activeTab === 'profile' && (
             <>
                 <div className="w-full lg:w-1/3">
@@ -266,7 +265,7 @@ export default function Settings() {
                             <input type="text" value={form.username} disabled className="w-full border bg-gray-100 p-3 rounded-lg text-gray-500 cursor-not-allowed" />
                         </div>
                         <div>
-                            <label className="block text-gray-700 font-medium mb-1">Nama Usaha / Toko</label>
+                            <label className="block text-gray-700 font-medium mb-1">Nama Usaha/Toko</label>
                             <input type="text" value={form.store_name} onChange={e => setForm({...form, store_name: e.target.value})} className="w-full border p-3 rounded-lg" />
                         </div>
                         <div>
@@ -283,7 +282,6 @@ export default function Settings() {
             </>
             )}
 
-            {/* TAB 2: KEAMANAN */}
             {activeTab === 'security' && (
                 <div className="w-full max-w-2xl mx-auto">
                     <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">

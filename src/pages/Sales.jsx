@@ -155,7 +155,6 @@ export default function Sales() {
 
             <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
                 <table className="w-full text-left">
-                    {/* Header Tabel Utama */}
                     <thead className="bg-gray-50 border-b text-gray-600 text-sm font-bold tracking-wider">
                         <tr>
                             <th className="p-4">Produk</th>
@@ -212,7 +211,6 @@ export default function Sales() {
                 )}
             </div>
 
-            {/* Keranjang Belanja (Drawer Bawah) */}
             {pendingSales.length > 0 && !summarySales && (
                 <div className={`sticky bottom-0 left-0 w-full bg-white shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] transition-transform duration-300 z-40 border-t ${panelOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'}`}>
                     
@@ -238,11 +236,9 @@ export default function Sales() {
                             <thead className="bg-gray-100 border-b text-left text-sm font-bold text-gray-600">
                                 <tr>
                                     <th className="p-3">Nama Barang</th>
-                                    {/* ALIGNMENT FIX: Harga Rata Kanan */}
                                     <th className="p-3 text-right">Harga Jual</th>
                                     <th className="p-3 text-center">Sisa Stok</th>
                                     <th className="p-3 text-center">Jumlah Terjual</th>
-                                    {/* ALIGNMENT FIX: Subtotal Rata Kanan */}
                                     <th className="p-3 text-right">Subtotal</th>
                                     <th className="p-3 text-center">Hapus</th>
                                 </tr>
@@ -289,7 +285,6 @@ export default function Sales() {
                 </div>
             )}
 
-            {/* Modal Ringkasan Transaksi */}
             {summarySales && (
               <div className='fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm overflow-auto'>
                   <div className='bg-white w-full max-w-5xl mt-16 mb-10 rounded-2xl shadow-xl border p-6'>
