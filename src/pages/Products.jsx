@@ -6,39 +6,14 @@ import Swal from 'sweetalert2';
 import api from '../components/api';
 import { formatRupiah } from '../utils/formatter';
 
-const ProductImage = ({ url, apiUrl }) => {
-    const [error, setError] = useState(false);
-    
-    if (!url || error) {
-        return (
-            <div className="w-12 h-12 bg-gray-100 rounded border flex items-center justify-center text-gray-400">
-                <Package size={20} />
-            </div>
-        );
-    }
-
-    const src = url.startsWith('http') ? url : `${apiUrl}${url}`;
-
-    return (
-        <img 
-            src={src} 
-            alt="Produk" 
-            className="w-12 h-12 object-cover rounded border bg-white"
-            onError={() => setError(true)}
-        />
-    );
-};
-
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false); 
-  
-  const API_URL = 'https://barangq-back-end-production.up.railway.app';
 
   const [form, setForm] = useState({
-    id: '', code: '', name: '', brand: '', description: '', image_url: '', buy_price: '', sell_price: '', stock: ''
+    id: '', code: '', name: '', brand: '', description: '', buy_price: '', sell_price: '', stock: ''
   });
 
   useEffect(() => { fetchProducts(); }, []);
@@ -53,7 +28,7 @@ export default function Products() {
   };
 
   const openAddModal = () => {
-    setForm({ id: '', code: '', name: '', brand: '', description: '', image_url: '', buy_price: '', sell_price: '', stock: '' });
+    setForm({ id: '', code: '', name: '', brand: '', description: '', buy_price: '', sell_price: '', stock: '' });
     setIsEdit(false);
     setShowModal(true);
   };
@@ -133,7 +108,6 @@ export default function Products() {
         <table className="w-full text-left">
             <thead className="bg-gray-50 border-b text-gray-600 text-sm font-bold tracking-wider">
                 <tr>
-                    <th className="p-4">Foto</th>
                     <th className="p-4">Kode/Nama</th>
                     <th className="p-4">Merk</th>
                     <th className='p-4 text-right pr-12'>Harga Beli</th>
@@ -145,9 +119,6 @@ export default function Products() {
             <tbody className="divide-y divide-gray-100">
                 {filtered.map((item) => (
                     <tr key={item.id} className="hover:bg-blue-50 transition">
-                        <td className="p-4">
-                            <ProductImage url={item.image_url} apiUrl={API_URL} />
-                        </td>
                         <td className="p-4">
                             <div className="font-bold text-gray-800">{item.name}</div>
                             <div className="text-xs text-gray-500">{item.code || '-'}</div>
@@ -220,16 +191,10 @@ export default function Products() {
                             onChange={e => handlePriceChange(e, 'sell_price')} 
                         />
                     </div>
-                    
-                    <div className="space-y-1">
+                    <div className="col-span-2 space-y-1">
                         <label className="text-xs font-bold text-gray-500">Stok Awal</label>
                         <input type="number" required className="border p-2 rounded w-full bg-gray-50" disabled={isEdit}
                             value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} />
-                    </div>
-                    <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-500">URL Gambar</label>
-                        <input type="text" placeholder="https://..." className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500 outline-none" 
-                            value={form.image_url} onChange={e => setForm({...form, image_url: e.target.value})} />
                     </div>
 
                     <button className="col-span-2 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 mt-4 transition shadow-lg">
