@@ -118,7 +118,7 @@ export default function Settings() {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (passForm.newPassword !== passForm.confirmPassword) {
-      return Swal.fire('Error', 'Konfirmasi password baru tidak cocok', 'error');
+      return Swal.fire('Error', 'Konfirmasi kata sandi baru tidak cocok', 'error');
     }
     
     try {
@@ -126,7 +126,7 @@ export default function Settings() {
         oldPassword: passForm.oldPassword,
         newPassword: passForm.newPassword
       });
-      Swal.fire('Sukses', 'Password berhasil diganti', 'success');
+      Swal.fire('Sukses', 'Kata sandi berhasil diganti', 'success');
       setPassForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
       Swal.fire('Gagal', err.response?.data?.error || 'Password lama salah', 'error');
@@ -143,7 +143,7 @@ export default function Settings() {
       
       setShowPinModal(false);
       setPinData({ pin: '', newPass: '' });
-      Swal.fire('Sukses', 'Password berhasil direset via PIN', 'success');
+      Swal.fire('Sukses', 'Kata sandi berhasil diperbarui via PIN', 'success');
     } catch (err) {
       Swal.fire('Gagal', 'PIN salah atau terjadi kesalahan', 'error');
     }
